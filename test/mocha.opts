@@ -1,0 +1,1 @@
+test index.js --compilers js:./node_modules/babel/register --watch
