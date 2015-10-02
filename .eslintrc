@@ -1,0 +1,10 @@
+{
+    "extends": "airbnb",
+    "rules": {
+      "guard-for-in": [0],
+      "comma-dangle": [0],
+      "padded-blocks": [0],
+      "prefer-const": [0],
+      "no-console": [0]
+    }
+}
