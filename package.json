@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel index.js -o dist/index.js",
     "watch": "gaze 'npm run build' index.js test/*",
-    "watch-test": "mocha",
+    "watch-test": "mocha --watch",
     "tw": "npm run watch-test",
     "lint": "npm run eslint && npm run jscs",
     "jscs": "jscs index.js test",
