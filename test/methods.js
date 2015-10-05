@@ -42,13 +42,13 @@ describe('Adit methods', () => {
 
       let from = {
         hostname: 'a',
-        port: 1,
-        key: __filename
+        port: 1
       };
 
       let to = {
         username: 'me',
         hostname: 'b',
+        password: 'c',
         port: 2
       };
 
@@ -59,7 +59,7 @@ describe('Adit methods', () => {
       expect(call.host).to.equal('b');
       expect(call.port).to.equal(22);
       expect(call.username).to.equal('me');
-      expect(call.privateKey).to.be.an.instanceof(Buffer);
+      expect(call.password).to.equal('c');
 
       expect(tunnel.retryTimes).to.equal(2);
     });
@@ -69,8 +69,7 @@ describe('Adit methods', () => {
 
       let from = {
         hostname: 'a',
-        port: 1,
-        key: __filename
+        port: 1
       };
 
       let to = {
@@ -96,7 +95,6 @@ describe('Adit methods', () => {
       let from = {
         hostname: 'a',
         port: 1,
-        key: __filename,
         agent: 'tmp'
       };
 
@@ -122,8 +120,7 @@ describe('Adit methods', () => {
     it('should invoke ssh "connect" method without arguments', () => {
       let from = {
         hostname: 'a',
-        port: 1,
-        key: __filename
+        port: 1
       };
 
       let to = {
@@ -143,8 +140,7 @@ describe('Adit methods', () => {
     it('should close connection', () => {
       let from = {
         hostname: 'a',
-        port: 1,
-        key: __filename
+        port: 1
       };
 
       let to = {
@@ -242,8 +238,7 @@ describe('Adit methods', () => {
     it('should connect and attach events', () => {
       let from = {
         hostname: 'a',
-        port: 1,
-        key: __filename
+        port: 1
       };
 
       let to = {
