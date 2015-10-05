@@ -25,7 +25,7 @@
   ],
   "files": [
     "dist",
-    "LICENSE"
+    "license"
   ],
   "author": "Oleg Gaidarenko <markelog@gmail.com>",
   "license": "MIT",
