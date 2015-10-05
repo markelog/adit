@@ -4,7 +4,7 @@
   "description": "SSH tunnel, if you know what are you doing :-)",
   "main": "dist/index.js",
   "scripts": {
-    "build": "babel index.js -o dist/index.js",
+    "build": "babel index.js -d dist",
     "watch": "gaze 'npm run build' index.js test/*",
     "watch-test": "gaze 'npm run build && mocha' index.js test/*",
     "tw": "npm run watch-test",
