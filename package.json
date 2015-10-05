@@ -1,5 +1,5 @@
 {
-  "name": "karma-webdriver-over-ssh-launcher",
+  "name": "adit",
   "version": "0.1.0",
   "description": "SSH tunnel, if you know what are you doing :-)",
   "main": "dist/index.js",
@@ -15,13 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/markelog/karma-webdriver-over-ssh-launcher"
+    "url": "github.com/markelog/adit"
   },
   "keywords": [
-    "karma-plugin",
-    "launcher",
-    "WebDriver",
-    "wd",
+    "tunnel",
+    "adit",
+    "forwarding",
     "ssh"
   ],
   "author": "Oleg Gaidarenko <markelog@gmail.com>",
