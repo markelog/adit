@@ -6,7 +6,6 @@ let Adit = rewire('../index.js');
 
 describe('Adit methods', () => {
   let stubs;
-  let path = Adit.__get__('path');
   let oldSock = process.env.SSH_AUTH_SOCK;
 
   // babel side effect :-(
@@ -22,11 +21,9 @@ describe('Adit methods', () => {
         end: sinon.stub()
       };
     });
-    sinon.stub(path, 'join', () => __filename);
   });
 
   afterEach(() => {
-    path.join.restore();
     Connection.default.restore();
     process.env.SSH_AUTH_SOCK = oldSock;
 
