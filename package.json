@@ -35,12 +35,12 @@
   },
   "homepage": "https://github.com/markelog/karma-webdriver-over-ssh-launcher)",
   "dependencies": {
+    "babel": "^5.8.23",
     "karma-webdriver-launcher": "^1.0.4",
     "lodash": "^3.10.1",
     "ssh2": "^0.4.11"
   },
   "devDependencies": {
-    "babel": "^5.8.23",
     "babel-eslint": "^4.1.3",
     "chai": "^3.3.0",
     "eslint": "^1.5.1",
