@@ -17,8 +17,7 @@ describe('Adit#addEvents', () => {
   beforeEach(() => {
     from = {
       hostname: 'a',
-      port: 1,
-      key: __filename
+      port: 1
     };
 
     to = {

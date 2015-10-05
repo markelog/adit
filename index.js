@@ -15,7 +15,7 @@ export default class Adit {
    * @param {Object} from
    * @param {String} from.hostname
    * @param {Number} from.port
-   * @param {String} from.key - path to the user key
+   * @param {String} from.password
    * @param {Object} to
    * @param {String} to.hostname
    * @param {Number | Array} [to.port = 8000] - number or range
@@ -50,16 +50,16 @@ export default class Adit {
     this.username = to.username || process.env.USER;
 
     /**
+     * User password
+     * @type {String}
+     */
+    this.password = to.password || "";
+
+    /**
      * Path to ssh-agent socket
      * @type {String}
      */
-    this.agent = from.agent || process.env.SSH_AUTH_SOCK;
-
-    /**
-     * Authorization key
-     * @type {String}
-     */
-    this.key = this.agent ? undefined : read(from.key || path.join(process.env.HOME, '.ssh', 'id_rsa'));
+    this.agent = from.agent || process.env.SSH_AUTH_SOCK || null;
 
     /**
      * Deferred object which we will resolve when connect to the remote host
@@ -119,7 +119,7 @@ export default class Adit {
       settings.agent = this.agent;
 
     } else {
-      settings.privateKey = this.key;
+      settings.password = this.password;
     }
 
     this.connection.connect(settings);

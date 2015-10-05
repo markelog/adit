@@ -41,8 +41,8 @@ describe('Adit#constructor', () => {
     expect(adit.to.port).to.equal(to.port);
 
     expect(adit.username).to.equal(process.env.USER);
+    expect(adit.password).to.be.empty;
     expect(adit.agent).to.equal('tmp');
-    expect(adit.key).to.equal(undefined);
 
     expect(adit.defer).to.equal(undefined);
 
@@ -55,7 +55,7 @@ describe('Adit#constructor', () => {
     expect(adit.retryTimes).to.be.equal(0);
   });
 
-  it('should define all needed properties with private key', () => {
+  it('should define all needed properties with password', () => {
     delete process.env.SSH_AUTH_SOCK;
 
     let from = {
@@ -65,6 +65,7 @@ describe('Adit#constructor', () => {
 
     let to = {
       hostname: 'b',
+      password: 'c',
       port: 2
     };
 
@@ -77,8 +78,8 @@ describe('Adit#constructor', () => {
     expect(adit.to.port).to.equal(to.port);
 
     expect(adit.username).to.equal(process.env.USER);
-    expect(adit.agent).to.equal(undefined);
-    expect(adit.key).to.be.instanceof(Buffer);
+    expect(adit.password).to.equal('c');
+    expect(adit.agent).to.equal(null);
 
     expect(adit.defer).to.equal(undefined);
 
@@ -127,22 +128,22 @@ describe('Adit#constructor', () => {
     expect(to.port).to.not.equal(adit.port);
   });
 
-  it('should custom username and key', () => {
+  it('should custom username and password', () => {
     let from = {
       hostname: 'a',
-      port: 1,
-      key: __filename
+      port: 1
     };
 
     let to = {
       hostname: 'b',
       port: [1, 5],
-      username: 'me'
+      username: 'me',
+      password: 'c'
     };
 
     let adit = new Adit(from, to);
 
     expect(adit.to.username).to.equal('me');
-    expect(adit.from.key).to.be.an('string');
+    expect(adit.to.password).to.equal('c');
   });
 });

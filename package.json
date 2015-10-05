@@ -6,12 +6,13 @@
   "scripts": {
     "build": "babel index.js -o dist/index.js",
     "watch": "gaze 'npm run build' index.js test/*",
-    "watch-test": "mocha --watch",
+    "watch-test": "gaze 'npm run build && mocha' index.js test/*",
     "tw": "npm run watch-test",
     "lint": "npm run eslint && npm run jscs",
     "jscs": "jscs index.js test",
     "eslint": "eslint index.js test",
-    "test": "npm run lint && mocha"
+    "test": "npm run lint && mocha",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
