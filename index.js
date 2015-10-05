@@ -1,3 +1,5 @@
+require('babel/polyfill');
+
 import * as net from 'net';
 
 import Connection from 'ssh2';
