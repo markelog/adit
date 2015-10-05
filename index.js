@@ -1,6 +1,4 @@
-import * as path from 'path';
 import * as net from 'net';
-import {readFileSync as read} from 'fs';
 
 import Connection from 'ssh2';
 import { extend } from 'lodash';
@@ -53,7 +51,7 @@ export default class Adit {
      * User password
      * @type {String}
      */
-    this.password = to.password || "";
+    this.password = to.password || '';
 
     /**
      * Path to ssh-agent socket

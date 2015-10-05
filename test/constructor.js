@@ -1,4 +1,3 @@
-import sinon from 'sinon';
 import { expect } from 'chai';
 import rewire from 'rewire';
 
@@ -7,16 +6,10 @@ import Connection from 'ssh2';
 let Adit = rewire('..');
 
 describe('Adit#constructor', () => {
-  let path = Adit.__get__('path');
   let oldSock = process.env.SSH_AUTH_SOCK;
-
-  beforeEach(() => {
-    sinon.stub(path, 'join', () => __filename);
-  });
 
   afterEach(() => {
     process.env.SSH_AUTH_SOCK = oldSock;
-    path.join.restore();
   });
 
   it('should define all needed properties', () => {

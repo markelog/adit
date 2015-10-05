@@ -11,7 +11,7 @@
     "lint": "npm run eslint && npm run jscs",
     "jscs": "jscs index.js test",
     "eslint": "eslint index.js test",
-    "test": "npm run lint && mocha",
+    "test": "npm run lint && npm run build && mocha",
     "prepublish": "npm run build"
   },
   "repository": {
