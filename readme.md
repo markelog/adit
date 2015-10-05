@@ -23,9 +23,12 @@ let adit = new Tunnel({
   // Or port range - [80, 85], needed in case we would want to try another port if first one fails
   port: 80
 
-}, log /* Custom logger, if not provided `console` will be used */);
+}, log /* Custom logger, if not provided, `console` will be used */);
 
 adit.open(3 /* How many times we want to reconnect if we can't */);
+
+// Then after awhile you would want to close the tunnel
+adit.close();
 ```
 
 After this, all your request will be forwarded to remote server and back again.
