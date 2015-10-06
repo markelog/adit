@@ -9,7 +9,6 @@ describe('Adit methods', () => {
   let from;
   let to;
   let oldSock = process.env.SSH_AUTH_SOCK;
-  let oldHome = process.env.HOME;
 
   // babel side effect :-(
   let fs = Adit.__get__('_fs');
