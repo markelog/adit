@@ -9,6 +9,7 @@ describe('Adit methods', () => {
   let from;
   let to;
   let oldSock = process.env.SSH_AUTH_SOCK;
+  let oldHome = process.env.HOME;
 
   // babel side effect :-(
   let fs = Adit.__get__('_fs');
@@ -45,7 +46,6 @@ describe('Adit methods', () => {
     for (let stub in stubs) {
       stubs[stub].restore();
     }
-
   });
 
   describe('Adit#connect', () => {
@@ -64,6 +64,7 @@ describe('Adit methods', () => {
 
     it('should use defined agent', () => {
       process.env.SSH_AUTH_SOCK = 'tmp1';
+      process.env.HOME = __filename;
 
       from.agent = 'tmp2';
       let tunnel = new Adit(from, to);
