@@ -38,7 +38,7 @@ In some cases, your might developing locally with 3-rd party interaction, like i
 
 In such case, you could forward your requests through that server.
 
-## Authentification stategy
+## Authentification strategy
 * If `password` is defined - use it
 * If `agent` or `key is defined explicitly - use on of them, prioritize the `agent`
 * If `agent` or `key is not passed - use environment varible if deinfed, prioritize the `agent`
