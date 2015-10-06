@@ -7,6 +7,20 @@ let Adit = rewire('..');
 
 describe('Adit#constructor', () => {
   let oldSock = process.env.SSH_AUTH_SOCK;
+  let from;
+  let to;
+
+  beforeEach(() => {
+    from = {
+      hostname: 'a',
+      port: 1
+    };
+
+    to = {
+      hostname: 'b',
+      port: 2
+    };
+  });
 
   afterEach(() => {
     process.env.SSH_AUTH_SOCK = oldSock;
@@ -14,16 +28,6 @@ describe('Adit#constructor', () => {
 
   it('should define all needed properties', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
-
-    let from = {
-      hostname: 'a',
-      port: 1
-    };
-
-    let to = {
-      hostname: 'b',
-      port: 2
-    };
 
     let adit = new Adit(from, to);
 
@@ -36,6 +40,8 @@ describe('Adit#constructor', () => {
     expect(adit.username).to.equal(process.env.USER);
     expect(adit.password).to.be.empty;
     expect(adit.agent).to.equal('tmp');
+    expect(adit.key).to.equal(null);
+    expect(adit.password).to.equal(null);
 
     expect(adit.defer).to.equal(undefined);
 
@@ -48,54 +54,19 @@ describe('Adit#constructor', () => {
     expect(adit.retryTimes).to.be.equal(0);
   });
 
-  it('should define all needed properties with password', () => {
+  it('should set password to key or agent', () => {
     delete process.env.SSH_AUTH_SOCK;
 
-    let from = {
-      hostname: 'a',
-      port: 1
-    };
-
-    let to = {
-      hostname: 'b',
-      password: 'c',
-      port: 2
-    };
+    to.password = 'c';
 
     let adit = new Adit(from, to);
 
-    expect(adit.from).to.deep.equal(from);
-    expect(adit.to).to.deep.equal(to);
-
-    expect(adit.portRange).to.equal(to.port);
-    expect(adit.to.port).to.equal(to.port);
-
-    expect(adit.username).to.equal(process.env.USER);
     expect(adit.password).to.equal('c');
     expect(adit.agent).to.equal(null);
-
-    expect(adit.defer).to.equal(undefined);
-
-    expect(adit.promise).to.have.property('then');
-    expect(adit.promise).to.not.have.property('resolve');
-
-    expect(adit.logger).to.not.have.property('info', 'error');
-    expect(adit.connection).to.be.an.instanceof(Connection);
-
-    expect(adit.retryTimes).to.be.equal(0);
+    expect(adit.key).to.equal(null);
   });
 
   it('should define correct logger', () => {
-    let from = {
-      hostname: 'a',
-      port: 1
-    };
-
-    let to = {
-      hostname: 'b',
-      port: 2
-    };
-
     let logger = {};
 
     let adit = new Adit(from, to, logger);
@@ -104,15 +75,7 @@ describe('Adit#constructor', () => {
   });
 
   it('should define port with port range', () => {
-    let from = {
-      hostname: 'a',
-      port: 1
-    };
-
-    let to = {
-      hostname: 'b',
-      port: [1, 5]
-    };
+    to.port = [1, 5];
 
     let adit = new Adit(from, to);
 

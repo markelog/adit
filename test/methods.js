@@ -2,17 +2,32 @@ import sinon from 'sinon';
 import { expect } from 'chai';
 import rewire from 'rewire';
 
-let Adit = rewire('../index.js');
+let Adit = rewire('../dist/index.js');
 
 describe('Adit methods', () => {
   let stubs;
+  let from;
+  let to;
   let oldSock = process.env.SSH_AUTH_SOCK;
 
   // babel side effect :-(
+  let fs = Adit.__get__('_fs');
+  let path = Adit.__get__('path');
   let Connection = Adit.__get__('_ssh22');
 
   beforeEach(() => {
     stubs = {};
+
+    from = {
+      hostname: 'a',
+      port: 1
+    };
+
+    to = {
+      username: 'me',
+      hostname: 'b',
+      port: 2
+    };
 
     sinon.stub(Connection, 'default', () => {
       return {
@@ -34,6 +49,77 @@ describe('Adit methods', () => {
   });
 
   describe('Adit#connect', () => {
+    it('should use password', () => {
+      to.password = 'c';
+
+      let tunnel = new Adit(from, to);
+      tunnel.connect(2);
+
+      let call = tunnel.connection.connect.getCall(0).args[0];
+
+      expect(call.password).to.equal('c');
+      expect(call).to.not.have.property('agent');
+      expect(call).to.not.have.property('privateKey');
+    });
+
+    it('should use defined agent', () => {
+      process.env.SSH_AUTH_SOCK = 'tmp1';
+
+      from.agent = 'tmp2';
+      let tunnel = new Adit(from, to);
+      tunnel.connect();
+
+      let call = tunnel.connection.connect.getCall(0).args[0];
+
+      expect(call.agent).to.equal('tmp2');
+      expect(call).to.not.have.property('password');
+      expect(call).to.not.have.property('privateKey');
+    });
+
+    it('should use environment agent', () => {
+      process.env.SSH_AUTH_SOCK = 'tmp1';
+
+      let tunnel = new Adit(from, to);
+      tunnel.connect();
+
+      let call = tunnel.connection.connect.getCall(0).args[0];
+
+      expect(call.agent).to.equal('tmp1');
+      expect(call).to.not.have.property('password');
+      expect(call).to.not.have.property('privateKey');
+    });
+
+    it('should use environment key', () => {
+      let buffer = new Buffer(1);
+      delete process.env.SSH_AUTH_SOCK;
+      stubs.read = sinon.stub(fs, 'readFileSync').returns(buffer);
+      stubs.join = sinon.stub(path, 'join').returns('');
+
+      let tunnel = new Adit(from, to);
+      tunnel.connect();
+
+      let call = tunnel.connection.connect.getCall(0).args[0];
+      expect(call.privateKey).to.equal(buffer);
+      expect(call).to.not.have.property('agent');
+      expect(call).to.not.have.property('password');
+
+      expect(stubs.join.getCall(0).args).to.contain(process.env.HOME, '.ssh', 'id_rsa');
+    });
+
+    it('should use defined key', () => {
+      let buffer = new Buffer(1);
+      stubs.read = sinon.stub(fs, 'readFileSync').returns(buffer);
+      from.key = 'tmp';
+
+      let tunnel = new Adit(from, to);
+      tunnel.connect(2);
+
+      let call = tunnel.connection.connect.getCall(0).args[0];
+      expect(call.privateKey).to.equal(buffer);
+      expect(call).to.not.have.property('agent');
+      expect(call).to.not.have.property('password');
+    });
+
     it('should invoke ssh "connect" method', () => {
       delete process.env.SSH_AUTH_SOCK;
 

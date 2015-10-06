@@ -1,5 +1,7 @@
 require('babel/polyfill');
 
+import * as path from 'path';
+import {readFileSync as read} from 'fs';
 import * as net from 'net';
 
 import Connection from 'ssh2';
@@ -51,15 +53,36 @@ export default class Adit {
 
     /**
      * User password
-     * @type {String}
+     * @type {String | null}
      */
-    this.password = to.password || '';
+    this.password = to.password || null;
 
     /**
      * Path to ssh-agent socket
-     * @type {String}
+     * @type {String | null}
      */
     this.agent = from.agent || process.env.SSH_AUTH_SOCK || null;
+
+    /**
+     * Authorization key
+     * @type {Buffer | null}
+     */
+    this.key = null;
+
+    // Authentification strategy
+    // If password is defined - use it
+    // If agent or key is defined explicitly - use on of them, prioritize the agent
+    // If agent or key is not passed - use environment varible if deinfed, prioritize the agent
+    if (this.password) {
+      this.key = this.agent = null;
+
+    } else if (!from.agent && !from.password && from.key) {
+      this.key = read(from.key);
+      this.agent = null;
+
+    } else if (!this.agent && !this.password && process.env.HOME) {
+      this.key = read(path.join(process.env.HOME, '.ssh', 'id_rsa'));
+    }
 
     /**
      * Deferred object which we will resolve when connect to the remote host
@@ -109,17 +132,20 @@ export default class Adit {
   connect(retryTimes = 0) {
     this.retryTimes = retryTimes;
 
-    const settings = {
+    let settings = {
       host: this.to.hostname,
       port: 22,
       username: this.username
     };
 
-    if (this.agent) {
+    if (this.password) {
+      settings.password = this.password;
+
+    } else if (this.agent) {
       settings.agent = this.agent;
 
     } else {
-      settings.password = this.password;
+      settings.privateKey = this.key;
     }
 
     this.connection.connect(settings);
