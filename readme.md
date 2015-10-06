@@ -42,6 +42,7 @@ In such case, you could forward your requests through that server.
 * If `password` is defined - use it
 * If `agent` or `key is defined explicitly - use on of them, prioritize the `agent`
 * If `agent` or `key is not passed - use environment varible if deinfed, prioritize the `agent`
+Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
 ## Examples
 * [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)
