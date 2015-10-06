@@ -123,17 +123,7 @@ describe('Adit methods', () => {
     it('should invoke ssh "connect" method', () => {
       delete process.env.SSH_AUTH_SOCK;
 
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        password: 'c',
-        port: 2
-      };
+      to.password = 'c';
 
       let tunnel = new Adit(from, to);
       tunnel.connect(2);
@@ -150,17 +140,6 @@ describe('Adit methods', () => {
     it('should invoke ssh "connect" method with ssh-agent', () => {
       process.env.SSH_AUTH_SOCK = 'tmp';
 
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: 2
-      };
-
       let tunnel = new Adit(from, to);
       tunnel.connect(2);
 
@@ -175,17 +154,7 @@ describe('Adit methods', () => {
     });
 
     it('should invoke ssh "connect" method with ssh-agent as argument', () => {
-      let from = {
-        hostname: 'a',
-        port: 1,
-        agent: 'tmp'
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: 2
-      };
+      from.agent = 'tmp';
 
       let tunnel = new Adit(from, to);
       tunnel.connect(2);
@@ -201,17 +170,6 @@ describe('Adit methods', () => {
     });
 
     it('should invoke ssh "connect" method without arguments', () => {
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: 2
-      };
-
       let tunnel = new Adit(from, to);
       tunnel.connect();
 
@@ -221,17 +179,6 @@ describe('Adit methods', () => {
 
   describe('Adit#close', () => {
     it('should close connection', () => {
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: 2
-      };
-
       let tunnel = new Adit(from, to);
       tunnel.connect();
       tunnel.close();
@@ -242,16 +189,7 @@ describe('Adit methods', () => {
 
   describe('Adit#reTry', () => {
     it('should try to reconnect when there is no more attemps', () => {
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: [1, 5]
-      };
+      to.port = [1, 5];
 
       let logger = { info: () => {}};
 
@@ -277,17 +215,8 @@ describe('Adit methods', () => {
       });
     });
 
-    it('should try to reconnect when there is one more attemp', () => {
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: [1, 5]
-      };
+    it('should try to reconnect when there is one more attempt', () => {
+      to.port = [1, 5];
 
       let logger = { info: () => {} };
 
@@ -319,17 +248,6 @@ describe('Adit methods', () => {
 
   describe('Adit#open', () => {
     it('should connect and attach events', () => {
-      let from = {
-        hostname: 'a',
-        port: 1
-      };
-
-      let to = {
-        username: 'me',
-        hostname: 'b',
-        port: 2
-      };
-
       stubs = {
         connect: sinon.stub(Adit.prototype, 'connect'),
         addEvents: sinon.stub(Adit.prototype, 'addEvents')
