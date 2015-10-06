@@ -23,6 +23,9 @@ describe('Adit#addEvents', () => {
     to = {
       username: 'me',
       hostname: 'b',
+
+      // So it wouldn't throw on machines without env varibles
+      password: 'tmp',
       port: 2
     };
 
