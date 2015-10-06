@@ -84,6 +84,13 @@ export default class Adit {
       this.key = read(path.join(process.env.HOME, '.ssh', 'id_rsa'));
     }
 
+    if (!this.password && !this.agent && !this.key) {
+      throw new Error(
+        'SSH-agent is not enabled, private key doesn\'t \n exist and password is not provided' +
+        ' we need at least one of those things'
+      );
+    }
+
     /**
      * Deferred object which we will resolve when connect to the remote host
      * @private

@@ -7,6 +7,7 @@ let Adit = rewire('..');
 
 describe('Adit#constructor', () => {
   let oldSock = process.env.SSH_AUTH_SOCK;
+  let oldHome = process.env.HOME;
   let from;
   let to;
 
@@ -24,6 +25,7 @@ describe('Adit#constructor', () => {
 
   afterEach(() => {
     process.env.SSH_AUTH_SOCK = oldSock;
+    process.env.HOME = oldHome;
   });
 
   it('should define all needed properties', () => {
@@ -101,5 +103,13 @@ describe('Adit#constructor', () => {
 
     expect(adit.to.username).to.equal('me');
     expect(adit.to.password).to.equal('c');
+  });
+
+  it('should throw if there is not authorization strategy', () => {
+    delete process.env.SSH_AUTH_SOCK;
+    delete process.env.HOME;
+    let constructor = () => new Adit(from, to);
+
+    expect(constructor).to.throw(/SSH-agent is not enabled/);
   });
 });
