@@ -73,6 +73,7 @@ export default class Adit {
     // If password is defined - use it
     // If agent or key is defined explicitly - use on of them, prioritize the agent
     // If agent or key is not passed - use environment varible if deinfed, prioritize the agent
+    // Note: if key is used, assume it is added without passphrase, otherwise you should use agent
     if (this.password) {
       this.key = this.agent = null;
 
@@ -86,8 +87,8 @@ export default class Adit {
 
     if (!this.password && !this.agent && !this.key) {
       throw new Error(
-        'SSH-agent is not enabled, private key doesn\'t \n exist and password is not provided' +
-        ' we need at least one of those things'
+        'SSH-agent is not enabled, private key doesn\'t exist \n' +
+        'and password is not provided we need at least one of those things'
       );
     }
 
