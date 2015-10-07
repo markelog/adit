@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/adit/karma-webdriver-over-ssh-launcher.svg?branch=master)](https://travis-ci.org/adit/karma-webdriver-over-ssh-launcher)
+[![Build Status](https://travis-ci.org/markelog/karma-webdriver-over-ssh-launcher.svg?branch=master)](https://travis-ci.org/markelog/karma-webdriver-over-ssh-launcher)
 
 Adit
 ========================
@@ -10,7 +10,7 @@ Forward all your stuff through ssh tunnel
 ```js
 import Adit from 'adit';
 
-let adit = new Tunnel({
+let adit = new Adit({
 
   // From
   hostname: `example.com`,
@@ -18,16 +18,17 @@ let adit = new Tunnel({
 }, {
 
   // To
-  hostname: example.biz,
+  hostname: `example.biz`,
 
-  // Or port range - [80, 85], needed in case we would want to try another port if first one fails
+  // Or port range - [80, 85], 
+  // in case we would want to try another port if first one fails
   port: 80
 
 }, log /* Custom logger, if not provided, `console` will be used */);
 
 adit.open(3 /* How many times we want to reconnect if we can't */);
 
-// Then after awhile you would want to close the tunnel
+// Then after awhile, you would want to close it
 adit.close();
 ```
 
@@ -40,7 +41,7 @@ In such case, you could forward your requests through that server.
 
 ## Authentification strategy
 * If `password` is defined - use it
-* If `agent` or `key is defined explicitly - use on of them, prioritize the `agent`
+* If `agent` or `key` is defined explicitly - use on of them, prioritize the `agent`
 * If `agent` or `key is not passed - use environment varible if deinfed, prioritize the `agent`
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
