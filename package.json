@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/markelog/adit"
+    "url": "github.com/yandex/adit"
   },
   "keywords": [
     "tunnel",
@@ -31,9 +31,9 @@
   "author": "Oleg Gaidarenko <markelog@gmail.com>",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/markelog/adit/issues"
+    "url": "https://github.com/yandex/adit/issues"
   },
-  "homepage": "https://github.com/markelog/adit",
+  "homepage": "https://github.com/yandex/adit",
   "dependencies": {
     "babel": "^5.8.23",
     "karma-webdriver-launcher": "^1.0.4",
