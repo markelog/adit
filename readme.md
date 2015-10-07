@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/markelog/karma-webdriver-over-ssh-launcher.svg?branch=master)](https://travis-ci.org/markelog/karma-webdriver-over-ssh-launcher)
+[![Build Status](https://travis-ci.org/yandex/node-adit.svg?branch=master)](https://travis-ci.org/yandex/node-adit)
 
 Adit
 ========================
@@ -41,10 +41,10 @@ In such case, you could forward your requests through that server.
 
 ## Authentification strategy
 * If `password` is defined - use it
-* If `agent` or `key` is defined explicitly - use on of them, prioritize the `agent`
-* If `agent` or `key is not passed - use environment varible if deinfed, prioritize the `agent`
+* If `agent` or `key` is defined explicitly - use one of them, prioritize the `agent`
+* If `agent` or `key is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) if deinfed, prioritize the `agent`
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
 ## Examples
-* [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)
+* [karma](https://github.com/yandex/karma-webdriver-over-ssh-launcher)
 * [gemini](https://github.com/gemini-testing/gemini-tunnel)
