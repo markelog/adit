@@ -17,7 +17,9 @@ export default class Adit {
    * @param {Object} from
    * @param {String} from.hostname
    * @param {Number} from.port
-   * @param {String} from.password
+   * @param {String} [from.password]
+   * @param {String} [from.agent]
+   * @param {String} [from.key]
    * @param {Object} to
    * @param {String} to.hostname
    * @param {Number | Array} [to.port = 8000] - number or range
