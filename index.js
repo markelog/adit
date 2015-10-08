@@ -28,66 +28,79 @@ export default class Adit {
    */
   constructor(from, to, logger) {
     /**
-     * What hostname/port should we forward from?
+     * Deferred object which we will resolve when connect to the remote host
+     * @private
      * @type {Object}
      */
-    this.from = extend({}, from);
+    this[defer] = vow.defer();
+
+    /**
+     * What hostname/port should we forward from?
+     * @protected
+     * @type {Object}
+     */
+    this._from = extend({}, from);
 
     /**
      * What hostname/port should we forward to?
+     * @protected
      * @type {Object}
      */
-    this.to = extend({}, to);
+    this._to = extend({}, to);
 
     /**
      * Original port range, needed if we infact received port range,
      * so we could extract new port for new connection
+     * @protected
      * @type {Number | Array}
      */
-    this.portRange = to.port;
-    this.to.port = Adit.getPort(this.portRange);
+    this._portRange = to.port;
+    this._to.port = Adit.getPort(this._portRange);
 
     /**
      * Username of the remote host
      * @type {String}
      */
-    this.username = to.username || process.env.USER;
+    this._username = to.username || process.env.USER || '';
 
     /**
      * User password
+     * @protected
      * @type {String | null}
      */
-    this.password = to.password || null;
+    this._password = to.password || null;
 
     /**
      * Path to ssh-agent socket
+     * @protected
      * @type {String | null}
      */
-    this.agent = from.agent || process.env.SSH_AUTH_SOCK || null;
+    this._agent = from.agent || process.env.SSH_AUTH_SOCK || null;
 
     /**
      * Authorization key
+     * @protected
      * @type {Buffer | null}
      */
-    this.key = null;
+    this._key = null;
 
     // Authentification strategy
     // If password is defined - use it
     // If agent or key is defined explicitly - use one of them, prioritize the agent
     // If agent or key is not passed - use environment varible if deinfed, prioritize the agent
     // Note: if key is used, assume it is added without passphrase, otherwise you should use agent
-    if (this.password) {
-      this.key = this.agent = null;
+    if (this._password) {
+      this._key = this._agent = null;
 
     } else if (!from.agent && !from.password && from.key) {
-      this.key = read(from.key);
-      this.agent = null;
+      this._key = read(from.key);
+      this._agent = null;
 
-    } else if (!this.agent && !this.password && process.env.HOME) {
-      this.key = read(path.join(process.env.HOME, '.ssh', 'id_rsa'));
+    } else if (!this._agent && !this._password && process.env.HOME) {
+      this._key = read(path.join(process.env.HOME, '.ssh', 'id_rsa'));
     }
 
-    if (!this.password && !this.agent && !this.key) {
+    if (!this._password && !this._agent && !this._key) {
       throw new Error(
         'SSH-agent is not enabled, private key doesn\'t exist \n' +
         'and password is not provided we need at least one of those things'
@@ -95,11 +108,11 @@ export default class Adit {
     }
 
     /**
-     * Deferred object which we will resolve when connect to the remote host
-     * @private
-     * @type {Object}
+     * How many times should we try to reconnect?
+     * @protected
+     * @type {Number}
      */
-    this[defer] = vow.defer();
+    this._retryTimes = 0;
 
     /**
      * Promise object which will be resolved when connect to the remote host
@@ -118,12 +131,6 @@ export default class Adit {
      * @type {Object}
      */
     this.connection = new Connection();
-
-    /**
-     * How many times should we try to reconnect?
-     * @type {Number}
-     */
-    this.retryTimes = 0;
   }
 
   /**
@@ -140,22 +147,22 @@ export default class Adit {
    * @param {Number} [retryTimes = 0] - how many times can we try to connect
    */
   connect(retryTimes = 0) {
-    this.retryTimes = retryTimes;
+    this._retryTimes = retryTimes;
 
     let settings = {
-      host: this.to.hostname,
+      host: this._to.hostname,
       port: 22,
-      username: this.username
+      username: this._username
     };
 
-    if (this.password) {
-      settings.password = this.password;
+    if (this._password) {
+      settings.password = this._password;
 
-    } else if (this.agent) {
-      settings.agent = this.agent;
+    } else if (this._agent) {
+      settings.agent = this._agent;
 
     } else {
-      settings.privateKey = this.key;
+      settings.privateKey = this._key;
     }
 
     this.connection.connect(settings);
@@ -177,15 +184,13 @@ export default class Adit {
     this.close();
 
     // Try new port
-    this.to.port = Adit.getPort(this.portRange);
+    this._to.port = Adit.getPort(this._portRange);
 
     // Recreate the connection
     this.connection = new Connection();
 
-    this.addEvents();
-
-    // Decrement the shot
-    this.connect(this.retryTimes - 1);
+    // Shot decrement
+    this.open(this._retryTimes - 1);
   }
 
   /**
@@ -193,8 +198,8 @@ export default class Adit {
    * @param {*} error - error that will be thrown if we don't want to try anymore
    */
   reTry(error) {
-    if (this.retryTimes !== 0) {
-      this.logger.info('Retrying to connect, %s tries left', this.retryTimes);
+    if (this._retryTimes !== 0) {
+      this.logger.info('Retrying to connect, %s tries left', this._retryTimes);
       this._reTry();
 
     } else {
@@ -215,7 +220,7 @@ export default class Adit {
       stream.pause();
 
       // Connect to the socket and output the stream
-      socket = net.connect(this.from.port, this.from.hostname, () => {
+      socket = net.connect(this._from.port, this._from.hostname, () => {
         stream.pipe(socket);
         socket.pipe(stream);
 
@@ -228,10 +233,10 @@ export default class Adit {
 
     // Wait for remote connection
     this.connection.on('ready', () => {
-      this.logger.info('Connection to %s:%s is established', this.to.hostname, this.to.port);
+      this.logger.info('Connection to %s:%s is established', this._to.hostname, this._to.port);
 
       // Forward all connections to remote address from local hostname and port
-      this.connection.forwardIn(this.to.hostname, this.to.port, (error) => {
+      this.connection.forwardIn(this._to.hostname, this._to.port, (error) => {
         if (error) {
           this.logger.error('Forwarding issue %s', error.message);
 
