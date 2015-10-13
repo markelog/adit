@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/yandex/node-adit.svg?branch=master)](https://travis-ci.org/yandex/node-adit)
+[![Build Status](https://travis-ci.org/markelog/adit.svg?branch=master)](https://travis-ci.org/markelog/adit)
 
 Adit
 ========================
@@ -46,5 +46,4 @@ In such case, you could forward your requests through that server.
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
 ## Examples
-* [karma](https://github.com/yandex/karma-webdriver-over-ssh-launcher)
-* [gemini](https://github.com/gemini-testing/gemini-tunnel)
+* [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)
