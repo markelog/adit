@@ -12,7 +12,7 @@ describe('Adit methods', () => {
   let oldSock = process.env.SSH_AUTH_SOCK;
 
   // babel side effect :-(
-  let Connection = Adit.__get__('_ssh22');
+  let Connection = Adit.__get__('_ssh2');
 
   beforeEach(() => {
     logger = {

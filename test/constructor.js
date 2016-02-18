@@ -40,7 +40,7 @@ describe('Adit#constructor', () => {
     expect(adit._to.port).to.equal(to.port);
 
     expect(adit._username).to.equal(process.env.USER);
-    expect(adit._password).to.be.empty;
+    expect(adit._password).to.equal(null);
     expect(adit._agent).to.equal('tmp');
     expect(adit._key).to.equal(null);
     expect(adit._password).to.equal(null);

@@ -14,7 +14,7 @@ describe('Adit#connect', () => {
   // babel side effect :-(
   let fs = Adit.__get__('_fs');
   let path = Adit.__get__('path');
-  let Connection = Adit.__get__('_ssh22');
+  let Connection = Adit.__get__('_ssh2');
 
   let connectAndGetArgs = () => {
     let adit = new Adit(from, to);
