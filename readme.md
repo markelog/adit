@@ -26,7 +26,7 @@ let adit = new Adit({
 
 }, log /* Custom logger, if not provided, `console` will be used */);
 
-adit.open(3 /* How many times we want to reconnect if we can't */);
+adit.open(3 /* How many times we want to try to connect, before bailing out */);
 
 // Then after awhile, you would want to close it
 adit.close();
