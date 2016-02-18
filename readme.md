@@ -35,14 +35,14 @@ adit.close();
 After this, all your request will be forwarded to remote server and back again.
 
 ## Why?
-In some cases, your might developing locally with 3-rd party interaction, like if you starting karma launcher through webdriver or if your service should receive requests from third party, that do not have access to your local server, but do have access your remote one.
+In some cases, your might be developing locally with 3-rd party interaction, like if you starting karma launcher through webdriver or if your service should receive requests from third party which doesn't have access to your local server, but do have access to your remote one.
 
 In such case, you could forward your requests through that server.
 
 ## Authentification strategy
 * If `password` is defined - use it
 * If `agent` or `key` is defined explicitly - use one of them, prioritize the `agent`
-* If `agent` or `key is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) if deinfed, prioritize the `agent`
+* If `agent` or `key` is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) if deinfed, prioritize the `agent`
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
 ## Examples
