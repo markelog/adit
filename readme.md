@@ -28,7 +28,9 @@ let adit = new Adit({
 
 adit.open(3 /* How many times we want to try to connect, before bailing out */);
 
-// Then after awhile, you would want to close it
+adit.promise // Resolved when connected 
+
+// Then, after awhile, you would want to close it
 adit.close();
 ```
 
