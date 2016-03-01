@@ -4,6 +4,7 @@
         "mocha": true
     },
   "rules": {
+    "arrow-body-style": [0],
     "no-shadow": [0],
     "no-unused-expressions": [0]
   }

@@ -1,7 +1,7 @@
 require('babel-polyfill');
 
 import * as path from 'path';
-import {readFileSync as read} from 'fs';
+import { readFileSync as read } from 'fs';
 import * as net from 'net';
 import { EventEmitter } from 'events';
 
