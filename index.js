@@ -59,6 +59,24 @@ export default class Adit {
   }
 
   /**
+   * Simplify port set
+   * @static
+   * @param {Object} from
+   * @param {Object} to
+   * @return {Object}
+   */
+  static getAddresses(from, to) {
+    from = Object.assign({
+      port: Adit.getPort(from.port)
+    }, from);
+    to = Object.assign({
+      port: Adit.getPort(to.port)
+    }, to);
+
+    return { from, to };
+  }
+
+  /**
    * @constructor
    * @param {String} settings.username
    * @param {Number | Array} [port] - number or range
@@ -112,6 +130,12 @@ export default class Adit {
      * @type {Number}
      */
     this.port = Adit.getPort(this.portRange);
+
+    /**
+     * Store all streams, so we could clean up event loop queue
+     * @type {Array}
+     */
+    this.streams = [];
 
     /**
      * Username of the remote host
@@ -184,6 +208,18 @@ export default class Adit {
      * @type {EventEmitter}
      */
     this.events = new EventEmitter();
+
+    /**
+     * "From" connection data
+     * @type {Object}
+     */
+    this.from = {};
+
+    /**
+     * "To" connection data
+     * @type {Object}
+     */
+    this.to = {};
 
     /**
      * Event listener
@@ -265,10 +301,62 @@ export default class Adit {
     }
   }
 
-  in(host, port) {
-    port = Adit.getPort(port);
+  /**
+   * Define `from` addresses, sugar method
+   * @param {String} address - server:port
+   * @return {Instance}
+   */
+  from(address) {
+    let [host, port] = address.split(':');
 
-    this.connection.forwardIn(host, port, error => {
+    this.from = { host, port };
+
+    return this;
+  }
+
+  /**
+   * Define `to` addresses and call relevant method, sugar method
+   * @param {String} address - server:port
+   * @return {Promise}
+   */
+  to(address) {
+    let [host, port] = address.split(':');
+
+    this.to = { host, port };
+
+    // Decide if that is should be proxy or reverse proxy
+    // TODO: there should be a better way
+    if (this.host === this.from.host) {
+      return this.in(this.from, this.to);
+    }
+
+    return this.out(this.from, this.to);
+  }
+
+  /**
+   * Forward requests from remote server to your local one
+   * @param {Object} from
+   * @param {Object} to
+   * @return {Promise}
+   */
+  in(from, to) {
+    ({ from, to } = Adit.getAddresses(from, to));
+
+    this.connection.on('tcp connection', (info, accept) => {
+      let socket;
+      let stream = accept();
+
+      // Connect to the socket and output the stream
+      socket = Adit.net.connect(to.port, to.host, () => {
+        stream.pipe(socket);
+        socket.pipe(stream);
+      });
+
+      // Store all streams, so we can clean it up afterwards
+      this.streams.push(socket, stream);
+    });
+
+    this.connection.forwardIn(from.host, from.port, error => {
       if (error) {
         this.events.emit('error', error);
         this[inDefer].reject(error);
@@ -281,29 +369,45 @@ export default class Adit {
   }
 
   /**
-   * Attach events and deal with them
+   * Forward requests from local server to remote one
+   * @param {Object} from
+   * @param {Object} to
+   * @return {Promise}
+   */
+  out(from, to) {
+    ({ from, to } = Adit.getAddresses(from, to));
+
+    // Since for `forwardOut` creates only one connection, we would have to create a
+    // server to pipe all requests
+    Adit.net.createServer(socket => {
+      this.connection.forwardOut(to.host, to.port, from.host, from.port, (error, stream) => {
+
+        // If error reject out promise connection and propogate the error
+        if (error) {
+          this.events.emit('error', error);
+          this[outDefer].reject(error);
+          return;
+        }
+
+        // Pipe requests
+        socket.pipe(stream);
+        stream.pipe(socket);
+
+        // Store all streams, so we can clean it up afterwards
+        this.streams.push(socket, stream);
+
+        // Resolve the connection
+        this[outDefer].resolve(this.connection);
+      });
+    }).listen(from.port, from.host);
+
+    return this[outDefer].promise();
+  }
+
+  /**
+   * Attach common events and deal with them
    */
   addEvents() {
-    let streams = [];
-
-    this.connection.on('tcp connection', (info, accept) => {
-      let socket;
-      let stream = accept();
-
-      stream.pause();
-
-      // Connect to the socket and output the stream
-      socket = Adit.net.connect(this.port, this.host, () => {
-        stream.pipe(socket);
-        socket.pipe(stream);
-
-        stream.resume();
-      });
-
-      // Store all streams, so we can clean it up afterwards
-      streams.push(socket, stream);
-    });
-
     // Wait for remote connection
     this.connection.on('ready', () => {
       this[defer].resolve(this.connection);
@@ -316,7 +420,7 @@ export default class Adit {
 
     this.connection.on('close', error => {
       // End all streams, to clean up event loop queue
-      streams.forEach(stream => stream.end());
+      this.streams.forEach(stream => stream.end());
       this.events.emit('close', error);
     });
   }

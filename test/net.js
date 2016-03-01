@@ -2,29 +2,24 @@ import EventEmitter from 'events';
 import * as oldNet from 'net';
 
 import sinon from 'sinon';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import Adit from '../index.js';
+
+import sinonChai from 'sinon-chai';
+
+chai.use(sinonChai);
+let expect = chai.expect;
 
 describe('net', () => {
   let to;
   let adit;
   let stream;
-  let stream2;
   let socket;
-  let net;
 
   beforeEach(() => {
     stream = {
       pipe: sinon.stub(),
-      pause: sinon.stub(),
-      resume: sinon.stub(),
-      end: sinon.stub()
-    };
-
-    stream2 = {
-      pipe: sinon.stub(),
-      pause: sinon.stub(),
       resume: sinon.stub(),
       end: sinon.stub()
     };
@@ -32,10 +27,6 @@ describe('net', () => {
     socket = {
       pipe: sinon.stub(),
       end: sinon.stub()
-    };
-
-    net = {
-      connect: sinon.stub().returns(socket)
     };
 
     to = {
@@ -47,7 +38,6 @@ describe('net', () => {
       port: 1
     };
 
-    Adit.net = net;
     sinon.stub(Adit.prototype, 'reTry');
 
     adit = new Adit(to);
@@ -62,7 +52,7 @@ describe('net', () => {
     }
 
     adit.connection = new EE();
-    adit.connection.forwardIn = sinon.stub();
+    adit.connection = new EE();
   });
 
   afterEach(() => {
@@ -94,8 +84,8 @@ describe('net', () => {
     it('should connect and attach events', () => {
       adit.open(2);
 
-      expect(adit.connect.calledWith(2)).to.equal(true);
-      expect(adit.addEvents.called).to.equal(true);
+      expect(adit.connect).to.be.calledWith(2);
+      expect(adit.addEvents).to.be.called;
     });
 
     it('should resolve connect promise', done => {
@@ -105,16 +95,14 @@ describe('net', () => {
         done();
       });
 
-      adit.connection.emit('tcp connection', 1, () => {
-        return stream;
-      }, 2);
+      adit.connection.emit('tcp connection', 1, () => stream, 2);
 
       adit.connection.emit('ready', 1, () => {}, 2);
     });
 
     it('should try to re-connect twice', done => {
       adit.open(2).then(() => {
-        expect(Adit.prototype.reTry.calledTwice).to.equal(true);
+        expect(Adit.prototype.reTry).to.be.calledTrice;
 
         done();
       });
@@ -140,16 +128,31 @@ describe('net', () => {
   describe('Adit#in', () => {
     let connect;
     beforeEach(() => {
-      connect = adit.in('test', 22);
+      adit.connection.forwardIn = sinon.stub();
+      Adit.net = {
+        connect: sinon.stub().returns(socket)
+      };
+
       sinon.stub(adit.events, 'emit');
+
+      connect = adit.in(
+        { host: 'test', port: 9999 },
+        { host: 'tset', port: 8888 }
+      );
+
+      adit.connection.emit('tcp connection', 1, () => stream, 2);
     });
 
     afterEach(() => {
       adit.events.emit.restore();
     });
 
-    it('should establish connections from remote server', () => {
-      adit.connection.forwardIn.calledWith('test', 22);
+    it('should call forwardIn method', () => {
+      expect(adit.connection.forwardIn).to.be.calledWith('test', 9999);
+    });
+
+    it('should attach to network', () => {
+      expect(adit.connection.forwardIn).to.be.calledWith('test', 9999);
     });
 
     it('should return promise', () => {
@@ -161,7 +164,11 @@ describe('net', () => {
 
       thirdArgument('test');
 
-      adit.events.emit.calledWith('test');
+      expect(adit.events.emit).to.be.calledWith('error', 'test');
+    });
+
+    it('should store all streams', () => {
+      expect(adit.streams.length).to.equal(2);
     });
 
     it('should reject "in" promise', () => {
@@ -174,18 +181,154 @@ describe('net', () => {
       });
     });
 
-    it('should use port range', () => {
-      adit.in('test', [20, 25]);
+    it('should use port range for forwarding', () => {
+      adit.in(
+        { host: 'test', port: [9999, 10000] },
+        { host: 'tset', port: 8888 }
+      );
 
       let secondArgument = adit.connection.forwardIn.firstCall.args[1];
 
-      expect(secondArgument).to.be.within(20, 25);
+      expect(secondArgument).to.be.within(9999, 10000);
+    });
+
+    it('should use port range net attachment', () => {
+      adit.in(
+        { host: 'test', port: 9999 },
+        { host: 'tset', port: [8888, 9999] }
+      );
+
+      let secondArgument = adit.connection.forwardIn.firstCall.args[1];
+
+      expect(secondArgument).to.be.within(8888, 9999);
+    });
+  });
+
+  describe('Adit#out', () => {
+    let connect;
+    let createServer;
+    beforeEach(() => {
+      createServer = {
+        listen: sinon.stub()
+      };
+
+      Adit.net = {
+        createServer: sinon.stub().returns(createServer)
+      };
+
+      connect = adit.out(
+        { host: 'test', port: 9999 },
+        { host: 'tset', port: 8888 }
+      );
+
+      adit.connection.forwardOut = sinon.stub();
+    });
+
+    afterEach(() => {
+
+    });
+
+    it('should start a server on 9999 port', () => {
+      expect(createServer.listen).to.be.calledWith(9999);
+    });
+
+    it('should return promise', () => {
+      expect(connect).to.have.property('then');
+    });
+
+    it('should not return resolved promise', () => {
+      expect(connect.isResolved()).to.equal(false);
+    });
+
+    describe('internals', () => {
+      let fun;
+      let funarg;
+      beforeEach(() => {
+        fun = Adit.net.createServer.firstCall.args[0];
+
+        fun(socket);
+
+        funarg = adit.connection.forwardOut.firstCall.args[4];
+      });
+
+      it('should call forwardOut with correct arguments', () => {
+        expect(adit.connection.forwardOut).to.be.calledWith('tset', 8888, 'test', 9999);
+      });
+
+      describe('error', () => {
+        beforeEach(() => {
+          sinon.stub(adit.events, 'emit');
+
+          connect = adit.out(
+            { host: 'test', port: 9999 },
+            { host: 'tset', port: 8888 }
+          );
+
+          fun = Adit.net.createServer.firstCall.args[0];
+
+          funarg('error', socket);
+        });
+
+        it('should not pipe the stream', () => {
+          expect(stream.pipe).to.not.be.called;
+        });
+
+        it('should not pipe the socket', () => {
+          expect(socket.pipe).to.not.be.called;
+        });
+
+        it('should not populate streams object', () => {
+          expect(adit.streams).to.be.empty;
+        });
+
+        it('should reject the promise', () => {
+          expect(connect.isRejected()).to.equal(true);
+        });
+
+        it('should not resolve the promise', () => {
+          expect(adit.events.emit).to.be.calledWith('error');
+        });
+      });
+
+      describe('success', () => {
+        beforeEach(() => {
+          funarg(null, stream);
+        });
+
+        it('should execute', () => {
+          expect(funarg.bind(null, null, stream)).to.not.throw();
+        });
+
+        it('should resolve "out" promise', () => connect);
+
+        it('should populate streams object', () => {
+          expect(adit.streams).to.have.length(2);
+        });
+
+        it('should pipe the stream', () => {
+          expect(stream.pipe).to.be.called;
+        });
+
+        it('should pipe the socket', () => {
+          expect(socket.pipe).to.be.called;
+        });
+      });
     });
   });
 
   describe('events', () => {
     beforeEach(() => {
+      adit.connection.forwardIn = sinon.stub();
+
+      Adit.net = {
+        connect: sinon.stub().returns(socket)
+      };
+
       adit.addEvents();
+      adit.in(
+        { host: 'test', port: 9999 },
+        { host: 'tset', port: 8888 }
+      );
     });
 
     describe('tcp connection', () => {
@@ -196,19 +339,14 @@ describe('net', () => {
           return stream;
         }, 2);
 
-        connectArgs = net.connect.firstCall.args;
+        connectArgs = Adit.net.connect.firstCall.args;
         connectArgs[2].call();
       });
 
       it('should connect to host/port', () => {
 
-        // port
-        expect(connectArgs[0]).to.equal(1);
-        expect(connectArgs[1]).to.equal('to-host');
-      });
-
-      it('should perform actions: stream.pause -> net.connect -> stream.resume', () => {
-        sinon.assert.callOrder(stream.pause, net.connect, stream.resume);
+        expect(connectArgs[0]).to.equal(8888);
+        expect(connectArgs[1]).to.equal('tset');
       });
 
       it('should pass socket to stream', () => {
@@ -219,24 +357,14 @@ describe('net', () => {
       it('should pass stream to socket', () => {
         expect(stream.pipe.firstCall.args[0]).to.equal(socket);
       });
-
-      it('should resume the stream', () => {
-        expect(stream.resume.callCount).to.equal(1);
-      });
     });
 
     it('should close all streams at tunnel close', () => {
-      adit.connection.emit('tcp connection', 1, () => {
-        return stream;
-      }, 2);
-      adit.connection.emit('tcp connection', 1, () => {
-        return stream2;
-      }, 2);
+      adit.connection.emit('tcp connection', 1, () => stream, 2);
       adit.connection.emit('close');
 
       expect(stream.end.callCount).to.equal(1);
-      expect(stream2.end.callCount).to.equal(1);
-      expect(socket.end.callCount).to.equal(2);
+      expect(socket.end.callCount).to.equal(1);
     });
 
     describe('"ready" event', () => {
@@ -253,7 +381,7 @@ describe('net', () => {
       it('should try to reconnect', () => {
         adit.events.on('error', () => {});
         adit.connection.emit('error', { test: 1 });
-        expect(adit.reTry.called).to.equal(true);
+        expect(adit.reTry).to.be.called;
       });
 
       it('should catch correct error', done => {

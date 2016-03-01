@@ -44,11 +44,17 @@ describe('Adit simple methods', () => {
   });
 
   describe('Adit#close', () => {
-    it('should close connection', () => {
+    beforeEach(() => {
       adit.connect();
       adit.close();
+    });
 
+    it('should close connection', () => {
       expect(adit.connection.end.calledOnce).to.equal(true);
+    });
+
+    it('should clean-up all streams', () => {
+      expect(adit.streams).to.be.empty;
     });
   });
 

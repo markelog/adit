@@ -24,7 +24,7 @@ let adit = new Adit({
 });
 
 // Or just
-let adit = new Adit(`example.com`);
+let adit = new Adit('example.com', 8000);
 
 // `3` is how many times we want to try to connect, before bailing out */
 adit.open(3).then(connection => {
@@ -34,7 +34,9 @@ adit.open(3).then(connection => {
   connection.in(`example.com`, 8000);
 
   // Or use port range
-  // connection.in(`example.com`, [8000, 8010]);
+  // connection.in(`example.com`, [8000, 8010]).then(() => {
+    // Forward is enabled
+  });
 }, error => {
   console.error(error);
 });
@@ -45,22 +47,30 @@ adit.close();
 
 After this, all your request will be forwarded to remote server and back again.
 
-## Why?
-### Karma webdriver example
-You have access to remote server - `A`
-Selenium grid **doesn't** have access to your local machine
-Selenium grid **does** have access to remote server - `A`
-Use this package to forward http requests from `example.com:80` to your `127.0.0.1:8000`, so
-when browser from grid would go to `127.0.0.1:8000` instead of `example.com:80`, like this -
+## Analogs to ssh commands
+Analog to 
+
+```sh
+$ ssh -L 9000:localhost:5432 example.com`
+```
+
 ```js
 new Adit('example.com').open().then(connection => {
-  connection.in(`example`, 80).then(() => {
+  connection.from('example.com:9000').to('localhost:5432').then(() => {
     // Forwarding is enabled
   });
 });
+```
 
-### Examples
-* [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)
+`$ ssh -R 9000:localhost:3000 example.com`
+
+```js
+new Adit('example.com').open().then(connection => {
+  connection.from('localhost:3000').to('example.com:9000').then(() => {
+    // Forwarding is enabled
+  });
+});
+```
 
 ## Authentification strategy
 * If `password` is defined - use it
@@ -68,5 +78,3 @@ new Adit('example.com').open().then(connection => {
 * If `agent` or `key` is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) if deinfed, prioritize the `agent`
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
-## Examples
-* [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)

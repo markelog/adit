@@ -46,7 +46,7 @@ describe('Adit#constructor', () => {
     expect(adit.events).to.be.an.instanceof(EventEmitter);
   });
 
-  it('should define all needed properties with "string" object', () => {
+  it('should define all needed properties with string argument', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
 
     let adit = new Adit('example.com');
