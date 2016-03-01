@@ -28,6 +28,9 @@ new Adit('example.com').open().then(connection => {
 });
 ```
 
+## Why?
+There is a lot of examples out there, for example, [check out](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html) "SSH Tunnel - Local and Remote Port Forwarding Explained With Examples"
+
 ## Usage
 
 ```js
