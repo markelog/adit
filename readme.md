@@ -13,22 +13,31 @@ import Adit from 'adit';
 let adit = new Adit({
 
   // From
-  hostname: `example.com`,
-  port: 80
-}, {
+  host: `example.com`,
+  // username: 'tester' // By default, `USER` environment variable will be used
 
-  // To
-  hostname: `example.biz`,
+  // port: 22, // 22 By default
+  // Or port range - 
+  // port: [22, 23], the first available port, of the three, will be used
 
-  // Or port range - [80, 85], 
-  // in case we would want to try another port if first one fails
-  port: 80
+  // Also, see "Authentification strategy" below
+});
 
-}, log /* Custom logger, if not provided, `console` will be used */);
+// Or just
+let adit = new Adit(`example.com`);
 
-adit.open(3 /* How many times we want to try to connect, before bailing out */);
+// `3` is how many times we want to try to connect, before bailing out */
+adit.open(3).then(connection => {
+  // At this point we established connection with remote server
 
-adit.promise // Resolved when connected 
+  // Forward all connections from remote server to local one
+  connection.in(`example.com`, 8000);
+
+  // Or use port range
+  // connection.in(`example.com`, [8000, 8010]);
+}, error => {
+  console.error(error);
+});
 
 // Then, after awhile, you would want to close it
 adit.close();
@@ -37,9 +46,21 @@ adit.close();
 After this, all your request will be forwarded to remote server and back again.
 
 ## Why?
-In some cases, your might be developing locally with 3-rd party interaction, like if you starting karma launcher through webdriver or if your service should receive requests from third party which doesn't have access to your local server, but do have access to your remote one.
+### Karma webdriver example
+You have access to remote server - `A`
+Selenium grid **doesn't** have access to your local machine
+Selenium grid **does** have access to remote server - `A`
+Use this package to forward http requests from `example.com:80` to your `127.0.0.1:8000`, so
+when browser from grid would go to `127.0.0.1:8000` instead of `example.com:80`, like this -
+```js
+new Adit('example.com').open().then(connection => {
+  connection.in(`example`, 80).then(() => {
+    // Forwarding is enabled
+  });
+});
 
-In such case, you could forward your requests through that server.
+### Examples
+* [karma](https://github.com/markelog/karma-webdriver-over-ssh-launcher)
 
 ## Authentification strategy
 * If `password` is defined - use it

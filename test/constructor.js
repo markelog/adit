@@ -1,24 +1,19 @@
+import EventEmitter from 'events';
+
 import { expect } from 'chai';
-import rewire from 'rewire';
 
 import Connection from 'ssh2';
 
-let Adit = rewire('..');
+import Adit from '../index.js';
 
 describe('Adit#constructor', () => {
   let oldSock = process.env.SSH_AUTH_SOCK;
   let oldHome = process.env.HOME;
-  let from;
   let to;
 
   beforeEach(() => {
-    from = {
-      hostname: 'from-host',
-      port: 1
-    };
-
     to = {
-      hostname: 'to-host',
+      host: 'to-host',
       port: 2
     };
   });
@@ -28,32 +23,50 @@ describe('Adit#constructor', () => {
     process.env.HOME = oldHome;
   });
 
-  it('should define all needed properties', () => {
+  it('should define all needed properties with "settings" object', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
 
-    let adit = new Adit(from, to);
+    let adit = new Adit(to);
 
-    expect(adit._from).to.deep.equal(from);
-    expect(adit._to).to.deep.equal(to);
+    expect(adit.portRange).to.equal(to.port);
+    expect(adit.port).to.equal(to.port);
 
-    expect(adit._portRange).to.equal(to.port);
-    expect(adit._to.port).to.equal(to.port);
-
-    expect(adit._username).to.equal(process.env.USER);
-    expect(adit._password).to.equal(null);
-    expect(adit._agent).to.equal('tmp');
-    expect(adit._key).to.equal(null);
-    expect(adit._password).to.equal(null);
+    expect(adit.username).to.equal(process.env.USER);
+    expect(adit.password).to.equal(null);
+    expect(adit.agent).to.equal('tmp');
+    expect(adit.key).to.equal(null);
+    expect(adit.password).to.equal(null);
 
     expect(adit.defer).to.equal(undefined);
 
     expect(adit.promise).to.have.property('then');
     expect(adit.promise).to.not.have.property('resolve');
 
-    expect(adit.logger).to.not.have.property('info', 'error');
     expect(adit.connection).to.be.an.instanceof(Connection);
+    expect(adit.events).to.be.an.instanceof(EventEmitter);
+  });
 
-    expect(adit._retryTimes).to.be.equal(0);
+  it('should define all needed properties with "string" object', () => {
+    process.env.SSH_AUTH_SOCK = 'tmp';
+
+    let adit = new Adit('example.com');
+
+    expect(adit.portRange).to.equal(22);
+    expect(adit.port).to.equal(22);
+
+    expect(adit.username).to.equal(process.env.USER);
+    expect(adit.password).to.equal(null);
+    expect(adit.agent).to.equal('tmp');
+    expect(adit.key).to.equal(null);
+    expect(adit.password).to.equal(null);
+
+    expect(adit.defer).to.equal(undefined);
+
+    expect(adit.promise).to.have.property('then');
+    expect(adit.promise).to.not.have.property('resolve');
+
+    expect(adit.connection).to.be.an.instanceof(Connection);
+    expect(adit.events).to.be.an.instanceof(EventEmitter);
   });
 
   it('should set password to key or agent', () => {
@@ -61,28 +74,20 @@ describe('Adit#constructor', () => {
 
     to.password = 'pass';
 
-    let adit = new Adit(from, to);
+    let adit = new Adit(to);
 
-    expect(adit._password).to.equal('pass');
-    expect(adit._agent).to.equal(null);
-    expect(adit._key).to.equal(null);
-  });
-
-  it('should define correct logger', () => {
-    let logger = {};
-
-    let adit = new Adit(from, to, logger);
-
-    expect(adit.logger).to.equal(logger);
+    expect(adit.password).to.equal('pass');
+    expect(adit.agent).to.equal(null);
+    expect(adit.key).to.equal(null);
   });
 
   it('should define port with port range', () => {
     to.port = [1, 5];
 
-    let adit = new Adit(from, to);
+    let adit = new Adit(to);
 
-    expect(adit._to.port).to.be.within(1, 5);
-    expect(adit._portRange).to.equal(to.port);
+    expect(adit.port).to.be.within(1, 5);
+    expect(adit.portRange).to.equal(to.port);
     expect(to.port).to.not.equal(adit.port);
   });
 
@@ -90,17 +95,17 @@ describe('Adit#constructor', () => {
     to.username = 'me';
     to.password = 'pass';
 
-    let adit = new Adit(from, to);
+    let adit = new Adit(to);
 
-    expect(adit._to.username).to.equal('me');
-    expect(adit._to.password).to.equal('pass');
+    expect(adit.username).to.equal('me');
+    expect(adit.password).to.equal('pass');
   });
 
   it('should throw if there is not authorization strategy', () => {
     delete process.env.SSH_AUTH_SOCK;
     delete process.env.HOME;
 
-    let constructor = () => new Adit(from, to);
+    let constructor = () => new Adit(to);
 
     expect(constructor).to.throw(/SSH-agent is not enabled/);
   });

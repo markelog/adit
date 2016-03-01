@@ -1,41 +1,25 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import rewire from 'rewire';
 
-let Adit = rewire('../dist/index.js');
+import Adit from '../index.js';
 
-describe('Adit methods', () => {
-  let from;
+describe('Adit simple methods', () => {
   let to;
-  let logger;
   let adit;
   let oldSock = process.env.SSH_AUTH_SOCK;
 
-  // babel side effect :-(
-  let Connection = Adit.__get__('_ssh2');
-
   beforeEach(() => {
-    logger = {
-      info: sinon.stub(),
-      error: sinon.stub()
-    };
-
-    from = {
-      hostname: 'from-host',
-      port: 1
-    };
-
     to = {
       username: 'me',
       password: 'pass',
-      hostname: 'to-host',
+      host: 'to-host',
       port: [1, 5]
     };
 
     sinon.stub(Adit.prototype, 'connect');
     sinon.stub(Adit.prototype, 'addEvents');
 
-    sinon.stub(Connection, 'default', () => {
+    sinon.stub(Adit, 'Connection', () => {
       return {
         connect: sinon.stub(),
         on: sinon.stub(),
@@ -43,7 +27,7 @@ describe('Adit methods', () => {
       };
     });
 
-    adit = new Adit(from, to, logger);
+    adit = new Adit(to);
   });
 
   afterEach(() => {
@@ -51,9 +35,11 @@ describe('Adit methods', () => {
       Adit.prototype.connect.restore();
     }
 
-    Adit.prototype.addEvents.restore();
+    if (Adit.prototype.addEvents.restore) {
+      Adit.prototype.addEvents.restore();
+    }
 
-    Connection.default.restore();
+    Adit.Connection.restore();
     process.env.SSH_AUTH_SOCK = oldSock;
   });
 
@@ -73,8 +59,6 @@ describe('Adit methods', () => {
 
       return adit.promise.fail((error) => {
         expect(error).to.equal('test');
-
-        expect(logger.info.callCount).to.equal(0);
         expect(adit.addEvents.callCount).to.equal(0);
         expect(adit.connection.end.callCount).to.equal(0);
       });
@@ -88,24 +72,10 @@ describe('Adit methods', () => {
 
       return adit.promise.fail((error) => {
         expect(error).to.equal('test');
-
-        expect(logger.info.callCount).to.equal(1);
         expect(adit.addEvents.callCount).to.equal(1);
         expect(adit.connection.connect.callCount).to.equal(1);
         expect(adit.connection.end.callCount).to.equal(0);
-
-        expect(logger.info.firstCall.args[0]).to.equal('Retrying to connect, %s tries left');
-        expect(logger.info.firstCall.args[1]).to.equal(1);
       });
-    });
-  });
-
-  describe('Adit#open', () => {
-    it('should connect and attach events', () => {
-      adit.open(2);
-
-      expect(adit.connect.calledWith(2)).to.equal(true);
-      expect(adit.addEvents.called).to.equal(true);
     });
   });
 });
