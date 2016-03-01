@@ -3,8 +3,9 @@ require('babel-polyfill');
 import * as path from 'path';
 import {readFileSync as read} from 'fs';
 import * as net from 'net';
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
+import { extend } from 'lodash';
 import Connection from 'ssh2';
 import * as vow from 'vow';
 
@@ -66,10 +67,10 @@ export default class Adit {
    * @return {Object}
    */
   static getAddresses(from, to) {
-    from = Object.assign({
+    from = extend({
       port: Adit.getPort(from.port)
     }, from);
-    to = Object.assign({
+    to = extend({
       port: Adit.getPort(to.port)
     }, to);
 

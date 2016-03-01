@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import * as oldNet from 'net';
 
 import sinon from 'sinon';
@@ -42,14 +42,7 @@ describe('net', () => {
 
     adit = new Adit(to);
 
-    let EE;
-
-    // For Node .10
-    if (typeof EventEmitter === 'object') {
-      EE = EventEmitter.EventEmitter;
-    } else {
-      EE = EventEmitter;
-    }
+    let EE = EventEmitter;
 
     adit.connection = new EE();
     adit.connection = new EE();
