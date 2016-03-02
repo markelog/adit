@@ -20,11 +20,11 @@ describe('static methods', () => {
   });
 
   describe('Adit.getAddresses', () => {
-    let {from, to} = Adit.getAddresses({
+    let { from, to } = Adit.getAddresses({
       port: 1
     }, {
       host: '1',
-      port: [2,3]
+      port: [2, 3]
     });
 
     it('should set port', () => {
@@ -32,7 +32,7 @@ describe('static methods', () => {
     });
 
     it('should resolve port range', () => {
-      expect(to.port).to.be.within(2,3);
+      expect(to.port).to.be.within(2, 3);
     });
 
     it('should set default host if there is none', () => {

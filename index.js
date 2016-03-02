@@ -5,7 +5,6 @@ import { readFileSync as read } from 'fs';
 import * as net from 'net';
 import { EventEmitter } from 'events';
 
-import { extend } from 'lodash';
 import Connection from 'ssh2';
 import * as vow from 'vow';
 

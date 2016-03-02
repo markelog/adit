@@ -38,7 +38,6 @@
   "homepage": "https://github.com/markelog/adit",
   "dependencies": {
     "babel-polyfill": "^6.6.0",
-    "lodash": "^4.5.1",
     "ssh2": "^0.4.13",
     "vow": "^0.4.12"
   },
