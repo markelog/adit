@@ -12,7 +12,7 @@ $ ssh -L 9000:localhost:5432 example.com`
 
 ```js
 new Adit('example.com').open().then(connection => {
-  connection.from('localhost:3000').to('example.com:9000').then(() => {
+  connection.from('localhost:5432').to('example.com:9000').then(() => {
     // Forwarding is enabled
   });
 });
@@ -22,7 +22,7 @@ new Adit('example.com').open().then(connection => {
 
 ```js
 new Adit('example.com').open().then(connection => {
-  connection.from('example.com:9000').to('localhost:5432').then(() => {
+  connection.from('example.com:9000').to('localhost:3000').then(() => {
     // Forwarding is enabled
   });
 });
