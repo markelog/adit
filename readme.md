@@ -30,7 +30,7 @@ new Adit('example.com').open().then(connection => {
 ```
 
 ## Why?
-There is a lot of examples out there, for example, [check out](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html) "SSH Tunnel - Local and Remote Port Forwarding Explained With Examples"
+There is a lot of examples out there, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
 
 ## Usage
 
@@ -55,7 +55,7 @@ let adit = new Adit({
 });
 
 // Or just
-let adit = new Adit('example.com', 8000);
+let adit = new Adit('example.com');
 
 // `3` - is how many times we want to try to connect, before bailing out */
 adit.open(3).then(connection => {
