@@ -325,7 +325,7 @@ export default class Adit {
 
     // Decide if that is should be proxy or reverse proxy
     // TODO: there should be a better way
-    if (!this.host.to || this.host.to === 'localhost') {
+    if (!this.auth.from.host || this.auth.from.host === 'localhost') {
       return this.in(this.auth.from, this.auth.to);
     }
 

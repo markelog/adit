@@ -58,6 +58,62 @@ describe('Adit simple methods', () => {
     });
   });
 
+  describe('Adit#(from | to)', () => {
+    beforeEach(() => {
+      sinon.stub(Adit.prototype, 'in').returns('in');
+      sinon.stub(Adit.prototype, 'out').returns('out');
+    });
+
+    afterEach(() => {
+      Adit.prototype.in.restore();
+      Adit.prototype.out.restore();
+    });
+
+    describe('Adit#from', () => {
+
+      it('should return instance', () => {
+        expect(adit.from('test:123')).to.equal(adit);
+      });
+
+      it('should set auth data', () => {
+        adit.from('test:123');
+        expect(adit.auth.from.host).to.equal('test');
+        expect(adit.auth.from.port).to.equal('123');
+      });
+    });
+
+    describe('Adit#to', () => {
+      it('should set auth data', () => {
+        adit.to('test:123');
+        expect(adit.auth.to.host).to.equal('test');
+        expect(adit.auth.to.port).to.equal('123');
+      });
+
+      it('should call Adit#in if host is not defined', () => {
+        expect(adit.to(':123')).to.equal('in');
+      });
+
+      it('should call Adit#in with correct params', () => {
+        adit.to(':123');
+        expect(Adit.prototype.in).calledWith(adit.auth.from, adit.auth.to);
+      });
+
+      it('should call Adit#in if host is localhost', () => {
+        expect(adit.to('localhost:123')).to.equal('in');
+      });
+
+      it('should call Adit#out if host is defined and not localhost', () => {
+        adit.auth.from = { host: 'test', port: '1' };
+        expect(adit.to('test:123')).to.equal('out');
+      });
+
+      it('should call Adit#out with correct params', () => {
+        adit.auth.from = { host: 'test', port: '1' };
+        adit.to(':123');
+        expect(Adit.prototype.out).calledWith(adit.auth.from, adit.auth.to);
+      });
+    });
+  });
   describe('Adit#reTry', () => {
     it('should not try to reconnect when there is no more attemps', () => {
       adit.connect();

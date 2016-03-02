@@ -146,6 +146,14 @@ describe('net', () => {
       expect(adit.connection.forwardIn).to.be.calledWith('test', 9999);
     });
 
+    it('should resolve promise', () => {
+      let thirdArgument = adit.connection.forwardIn.firstCall.args[2];
+
+      thirdArgument();
+
+      expect(connect.isResolved()).to.equal(true);
+    });
+
     it('should bind stream events to adit events', () => {
       expect(stream.on).to.be.calledWith('data');
       expect(stream.on.firstCall.args[1]).to.be.a('function');

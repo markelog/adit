@@ -11,6 +11,8 @@
     "jscs": "jscs index.js test",
     "eslint": "eslint index.js test",
     "test": "npm run lint && mocha",
+    "coverage": "istanbul cover _mocha -- test",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -46,10 +48,12 @@
     "babel-preset-stage-1": "^6.5.0",
     "babel-register": "^6.6.0",
     "chai": "^3.3.0",
+    "coveralls": "^2.11.8",
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0",
     "gaze-cli": "^0.2.0",
+    "istanbul": "^1.0.0-alpha.2",
     "jscs": "^2.10.0",
     "mocha": "^2.4.5",
     "sinon": "^1.17.1",
