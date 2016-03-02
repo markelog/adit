@@ -13,6 +13,7 @@
     "test": "npm run lint && mocha",
     "coverage": "istanbul cover _mocha -- test",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
+    "ci": "npm run lint && npm coveralls",
     "prepublish": "npm run build"
   },
   "repository": {

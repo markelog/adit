@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/markelog/adit.svg?branch=master)](https://travis-ci.org/markelog/adit)
+[![Coverage Status](https://coveralls.io/repos/github/markelog/adit/badge.svg?branch=master&t=CdowK8)](https://coveralls.io/github/SmartCode-Europa/ServiceOrderHub?branch=master)
 
 Adit
 ========================
