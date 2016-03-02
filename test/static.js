@@ -18,4 +18,25 @@ describe('static methods', () => {
       expect(Adit.getPort([1, 5])).to.be.within(1, 5);
     });
   });
+
+  describe('Adit.getAddresses', () => {
+    let {from, to} = Adit.getAddresses({
+      port: 1
+    }, {
+      host: '1',
+      port: [2,3]
+    });
+
+    it('should set port', () => {
+      expect(to.port).to.be.an('number');
+    });
+
+    it('should resolve port range', () => {
+      expect(to.port).to.be.within(2,3);
+    });
+
+    it('should set default host if there is none', () => {
+      expect(from.host).to.equal('localhost');
+    });
+  });
 });

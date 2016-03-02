@@ -7,12 +7,12 @@ Forward all your stuff through ssh tunnel
 
 ## Analogs to ssh commands
 ```sh
-$ ssh -L 9000:localhost:5432 example.com`
+$ ssh -L 9000:imgur.com:80 example.com`
 ```
 
 ```js
 new Adit('example.com').open().then(connection => {
-  connection.from('localhost:5432').to('example.com:9000').then(() => {
+  connection.from(':9000').to('imgur.com:80').then(() => {
     // Forwarding is enabled
   });
 });

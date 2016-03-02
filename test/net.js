@@ -21,12 +21,14 @@ describe('net', () => {
     stream = {
       pipe: sinon.stub(),
       resume: sinon.stub(),
-      end: sinon.stub()
+      end: sinon.stub(),
+      on: sinon.stub()
     };
 
     socket = {
       pipe: sinon.stub(),
-      end: sinon.stub()
+      end: sinon.stub(),
+      on: sinon.stub()
     };
 
     to = {
@@ -83,7 +85,7 @@ describe('net', () => {
 
     it('should resolve connect promise', done => {
       adit.open(2).then(connection => {
-        expect(connection).to.equal(adit.connection);
+        expect(connection).to.equal(adit);
 
         done();
       });
@@ -142,6 +144,11 @@ describe('net', () => {
 
     it('should call forwardIn method', () => {
       expect(adit.connection.forwardIn).to.be.calledWith('test', 9999);
+    });
+
+    it('should bind stream events to adit events', () => {
+      expect(stream.on).to.be.calledWith('data');
+      expect(stream.on.firstCall.args[1]).to.be.a('function');
     });
 
     it('should attach to network', () => {
@@ -217,10 +224,6 @@ describe('net', () => {
       adit.connection.forwardOut = sinon.stub();
     });
 
-    afterEach(() => {
-
-    });
-
     it('should start a server on 9999 port', () => {
       expect(createServer.listen).to.be.calledWith(9999);
     });
@@ -245,7 +248,7 @@ describe('net', () => {
       });
 
       it('should call forwardOut with correct arguments', () => {
-        expect(adit.connection.forwardOut).to.be.calledWith('tset', 8888, 'test', 9999);
+        expect(adit.connection.forwardOut).to.be.calledWith('test', 9999, 'tset', 8888);
       });
 
       describe('error', () => {
@@ -274,10 +277,6 @@ describe('net', () => {
           expect(adit.streams).to.be.empty;
         });
 
-        it('should reject the promise', () => {
-          expect(connect.isRejected()).to.equal(true);
-        });
-
         it('should not resolve the promise', () => {
           expect(adit.events.emit).to.be.calledWith('error');
         });
@@ -286,6 +285,9 @@ describe('net', () => {
       describe('success', () => {
         beforeEach(() => {
           funarg(null, stream);
+
+          // Execute the listen callback
+          createServer.listen.firstCall.args[2]();
         });
 
         it('should execute', () => {
