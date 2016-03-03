@@ -8,7 +8,7 @@ Forward all your stuff through ssh tunnel
 
 ## Usage
 
-### Comparison ssh commands with Adit API
+### ssh and `Adit`
 ```sh
 $ ssh -L 9000:imgur.com:80 example.com`
 ```
