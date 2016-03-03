@@ -4,7 +4,9 @@
 Adit
 ========================
 
-Forward all your stuff through ssh tunnel
+Forward all your stuff through ssh tunnel.
+
+There is a lot of examples out there how it could be useful, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
 
 ## Usage
 
@@ -111,10 +113,6 @@ adit.on('error', () => {
 // Then, after awhile, you would want to close it
 adit.close();
 ```
-
-
-## Why?
-There is a lot of examples out there, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
 
 ## Authentification strategy
 * If `password` is defined - use it
