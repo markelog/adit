@@ -6,7 +6,7 @@ Adit
 
 Forward all your stuff through ssh tunnel.
 
-There is a lot of examples out there how it could be useful, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
+There is a lot of examples out there how this could be useful, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
 
 ## Usage
 
