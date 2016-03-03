@@ -58,59 +58,71 @@ describe('Adit simple methods', () => {
     });
   });
 
-  describe('Adit#(from | to)', () => {
+  describe('Adit#(forward | reverse)', () => {
+    let adit;
+
     beforeEach(() => {
-      sinon.stub(Adit.prototype, 'in').returns('in');
-      sinon.stub(Adit.prototype, 'out').returns('out');
+      adit = new Adit(
+        '9999:localhost:3306 user@8.8.8.8',
+        'password'
+      );
+
+      sinon.stub(Adit.prototype, 'open').returns(new Promise(resolve => resolve()));
+      sinon.stub(Adit.prototype, 'in');
+      sinon.stub(Adit.prototype, 'out');
     });
 
     afterEach(() => {
+      Adit.prototype.open.restore();
       Adit.prototype.in.restore();
       Adit.prototype.out.restore();
     });
 
-    describe('Adit#from', () => {
+    describe('Adit#forward', () => {
+      beforeEach(() => adit.forward());
 
-      it('should return instance', () => {
-        expect(adit.from('test:123')).to.equal(adit);
+      it('should call Adit#open method', () => {
+        expect(adit.open).to.be.called;
       });
 
-      it('should set auth data', () => {
-        adit.from('test:123');
-        expect(adit.auth.from.host).to.equal('test');
-        expect(adit.auth.from.port).to.equal('123');
+      it('should call Adit#out method', () => {
+        expect(adit.out).to.be.called;
+      });
+
+      it('should pass args to Adit#out method', () => {
+        let args = adit.out.firstCall.args;
+        expect(args[0]).to.be.an('object');
+        expect(args[1]).to.be.an('object');
+      });
+
+      it('should pass args in correct order to Adit#out method', () => {
+        let args = adit.out.firstCall.args;
+        expect(args[0].port).to.equal('9999');
+        expect(args[1].port).to.equal('3306');
       });
     });
 
-    describe('Adit#to', () => {
-      it('should set auth data', () => {
-        adit.to('test:123');
-        expect(adit.auth.to.host).to.equal('test');
-        expect(adit.auth.to.port).to.equal('123');
+    describe('Adit#reverse', () => {
+      beforeEach(() => adit.reverse());
+
+      it('should call Adit#open method', () => {
+        expect(adit.open).to.be.called;
       });
 
-      it('should call Adit#in if host is not defined', () => {
-        expect(adit.to(':123')).to.equal('in');
+      it('should call Adit#in method', () => {
+        expect(adit.in).to.be.called;
       });
 
-      it('should call Adit#in with correct params', () => {
-        adit.to(':123');
-        expect(Adit.prototype.in).calledWith(adit.auth.from, adit.auth.to);
+      it('should pass args to Adit#in method', () => {
+        let args = adit.in.firstCall.args;
+        expect(args[0]).to.be.an('object');
+        expect(args[1]).to.be.an('object');
       });
 
-      it('should call Adit#in if host is localhost', () => {
-        expect(adit.to('localhost:123')).to.equal('in');
-      });
-
-      it('should call Adit#out if host is defined and not localhost', () => {
-        adit.auth.from = { host: 'test', port: '1' };
-        expect(adit.to('test:123')).to.equal('out');
-      });
-
-      it('should call Adit#out with correct params', () => {
-        adit.auth.from = { host: 'test', port: '1' };
-        adit.to(':123');
-        expect(Adit.prototype.out).calledWith(adit.auth.from, adit.auth.to);
+      it('should pass args in correct order to Adit#in method', () => {
+        let args = adit.in.firstCall.args;
+        expect(args[0].port).to.equal('3306');
+        expect(args[1].port).to.equal('9999');
       });
     });
   });

@@ -6,33 +6,43 @@ Adit
 
 Forward all your stuff through ssh tunnel
 
-## Analogs to ssh commands
+## Usage
+
+### ssh Analogues
 ```sh
 $ ssh -L 9000:imgur.com:80 example.com`
 ```
 
 ```js
-new Adit('example.com').open().then(connection => {
-  connection.from(':9000').to('imgur.com:80').then(() => {
-    // Forwarding is enabled
-  });
+new Adit('9000:imgur.com:80 example.com', /*password*/).forward().then(adit => {
+  console.log('success');
+
+  adit.close();
 });
 ```
 
 `$ ssh -R 9000:localhost:3000 example.com`
 
 ```js
-new Adit('example.com').open().then(connection => {
-  connection.from('example.com:9000').to('localhost:3000').then(() => {
-    // Forwarding is enabled
-  });
+new Adit('9000:localhost:3000 example.com', /*password*/).reverse().then(adit => {
+  console.log('success');
+
+  adit.close();
 });
 ```
+### Listen for events
+```js
+// Listen for errors
+let server = new Adit(...);
+server.on('ready', ...);
+server.on('tcp connection', ...)
+server.on('error', ...);
+server.on('data', ...);
 
-## Why?
-There is a lot of examples out there, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
+server.forward(...).then(...);
+```
 
-## Usage
+### Thorough  
 
 ```js
 import Adit from 'adit';
@@ -69,7 +79,9 @@ adit.open(3).then(connection => {
   }, {
     // To
     host: 'localhost'
-    port: 8080
+    port: 8080,
+    // Or port range - 
+    // port: [25, 28], the first available port, of the three, will be used
   }).then(() => {
     // Forwarding is enabled
   });
@@ -78,7 +90,9 @@ adit.open(3).then(connection => {
   connection.in({
     // from
     host: 'example.com'
-    port: 80
+    port: 80,
+    // Or port range - 
+    // port: [25, 28], the first available port, of the three, will be used
   }, {
     // To
     host: 'localhost'
@@ -97,6 +111,15 @@ adit.on('error', () => {
 // Then, after awhile, you would want to close it
 adit.close();
 ```
+
+
+## Why?
+There is a lot of examples out there, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
+
+## Usage
+
+
+
 
 ## Authentification strategy
 * If `password` is defined - use it

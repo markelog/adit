@@ -1,7 +1,7 @@
 {
   "name": "adit",
   "version": "1.0.0-pre",
-  "description": "SSH tunnel, if you know what are you doing :-)",
+  "description": "SSH tunnel - in any way you want it",
   "main": "dist/index.js",
   "scripts": {
     "build": "babel index.js -d dist",
@@ -24,6 +24,7 @@
     "tunnel",
     "adit",
     "forwarding",
+    "reverse",
     "ssh"
   ],
   "files": [
@@ -38,6 +39,7 @@
   "homepage": "https://github.com/markelog/adit",
   "dependencies": {
     "babel-polyfill": "^6.6.0",
+    "ssh-parse": "^1.0.0",
     "ssh2": "^0.4.13",
     "vow": "^0.4.12"
   },

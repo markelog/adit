@@ -49,7 +49,7 @@ describe('Adit#constructor', () => {
   it('should define all needed properties with string argument', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
 
-    let adit = new Adit('example.com');
+    let adit = new Adit('9999:localhost:3306 8.8.8.8');
 
     expect(adit.portRange).to.equal(22);
     expect(adit.port).to.equal(22);

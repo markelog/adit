@@ -1,4 +1,4 @@
-require('babel-polyfill');
+// require('babel-polyfill');
 
 import * as path from 'path';
 import { readFileSync as read } from 'fs';
@@ -7,6 +7,7 @@ import { EventEmitter } from 'events';
 
 import Connection from 'ssh2';
 import * as vow from 'vow';
+import { parse } from 'ssh-url';
 
 const defer = Symbol();
 const inDefer = Symbol();
@@ -78,41 +79,47 @@ export default class Adit {
     return { from, to };
   }
 
+  static parse(string, password) {
+    let [auth, url] = string.split(' ');
+
+    // Like 9000:example.com:80
+    auth = auth.split(':');
+    url = parse(url);
+
+    return {
+      host: url.hostname,
+      port: url.port || 22,
+      username: url.user,
+      password: password || null,
+
+      from: {
+        host: 'localhost',
+        port: auth[0]
+      },
+
+      to: {
+        host: auth[1],
+        port: auth[2]
+      }
+    };
+  }
+
   /**
    * @constructor
-   * @param {String} settings.username
-   * @param {Number | Array} [port] - number or range
+   * @param {Object | String} settings
+   * @param {String} [password]
+   * @param {String} settings.host
+   * @param {String} [settings.username]
+   * @param {Number | Array} [settings.port] - number or range
    * @param {String} [settings.password]
    * @param {String} [settings.agent]
    * @param {String} [settings.key]
-   * @param {String} settings.hostname
    * @return {Adit}
    */
-  constructor(settings) {
+  constructor(settings, password) {
     if (typeof settings === 'string') {
-      settings = { host: settings };
+      settings = Adit.parse(settings, password);
     }
-
-    /**
-     * Deferred object which we will resolve when connect to the remote host
-     * @private
-     * @type {Object}
-     */
-    this[defer] = vow.defer();
-
-    /**
-     * Deferred object which we will resolve when forwarding to *remote* host is established
-     * @private
-     * @type {Object}
-     */
-    this[inDefer] = vow.defer();
-
-    /**
-     * Deferred object which we will resolve when forwarding to *local* host is established
-     * @private
-     * @type {Object}
-     */
-    this[outDefer] = vow.defer();
 
     /**
      * Host name/address
@@ -134,16 +141,10 @@ export default class Adit {
     this.port = Adit.getPort(this.portRange);
 
     /**
-     * Store all streams, so we could clean up event loop queue
-     * @type {Array}
-     */
-    this.streams = [];
-
-    /**
      * Username of the remote host
      * @type {String}
      */
-    this.username = settings.username || process.env.USER || '';
+    this.username = settings.username || process.env.USER || null;
 
     /**
      * User password
@@ -162,6 +163,76 @@ export default class Adit {
      * @type {Buffer | null}
      */
     this.key = null;
+
+    /**
+     * "From" forward settings
+     * @type {Object | null}
+     */
+    this.from = settings.from || null;
+
+    /**
+     * "To" forward settings
+     * @type {Object | null}
+     */
+    this.to = settings.to || null;
+
+    /**
+     * How many times should we try to reconnect?
+     * @private
+     * @type {Number}
+     */
+    this[retryTimes] = 0;
+
+    /**
+    * Deferred object which we will resolve when connect to the remote host
+    * @private
+    * @type {Object}
+    */
+    this[defer] = vow.defer();
+
+    /**
+     * Deferred object which we will resolve when forwarding to *remote* host is established
+     * @private
+     * @type {Object}
+     */
+    this[inDefer] = vow.defer();
+
+    /**
+     * Deferred object which we will resolve when forwarding to *local* host is established
+     * @private
+     * @type {Object}
+     */
+    this[outDefer] = vow.defer();
+
+    /**
+     * Promise object which will be resolved when connect to the remote host
+     * @type {Object}
+     */
+    this.promise = this[defer].promise();
+
+    /**
+     * Our ssh connection
+     * @type {Connection}
+     */
+    this.connection = new Adit.Connection();
+
+    /**
+     * Event emitter
+     * @type {EventEmitter}
+     */
+    this.events = new EventEmitter();
+
+    /**
+     * Store all streams, so we could clean up event loop queue
+     * @type {Array}
+     */
+    this.streams = [];
+
+    /**
+     * Event listener
+     * @type {Function}
+     */
+    this.on = this.events.on.bind(this.events);
 
     // Authentification strategy
     // If password is defined - use it
@@ -185,45 +256,6 @@ export default class Adit {
         'and password is not provided we need at least one of those things'
       );
     }
-
-    /**
-     * How many times should we try to reconnect?
-     * @private
-     * @type {Number}
-     */
-    this[retryTimes] = 0;
-
-    /**
-     * Promise object which will be resolved when connect to the remote host
-     * @type {Object}
-     */
-    this.promise = this[defer].promise();
-
-    /**
-     * Our ssh connection
-     * @type {Connection}
-     */
-    this.connection = new Adit.Connection();
-
-    /**
-     * Event emitter
-     * @type {EventEmitter}
-     */
-    this.events = new EventEmitter();
-
-    /**
-     * "From" and "To" connection data
-     * @type {Object}
-     */
-    this.auth = {
-      from: {},
-      to: {}
-    };
-    /**
-     * Event listener
-     * @type {Function}
-     */
-    this.on = this.events.on.bind(this.events);
   }
 
   /**
@@ -300,35 +332,19 @@ export default class Adit {
   }
 
   /**
-   * Define `from` addresses, sugar method
-   * @param {String} address - server:port
-   * @return {Instance}
+   * Forward all connections
+   * @return {Promise}
    */
-  from(address) {
-    let [host, port] = address.split(':');
-
-    this.auth.from = { host, port };
-
-    return this;
+  forward() {
+    return this.open().then(() => this.out(this.from, this.to));
   }
 
   /**
-   * Define `to` addresses and call relevant method, sugar method
-   * @param {String} address - server:port
+   * Get all connections from remote
    * @return {Promise}
    */
-  to(address) {
-    let [host, port] = address.split(':');
-
-    this.auth.to = { host, port };
-
-    // Decide if that is should be proxy or reverse proxy
-    // TODO: there should be a better way
-    if (!this.auth.from.host || this.auth.from.host === 'localhost') {
-      return this.in(this.auth.from, this.auth.to);
-    }
-
-    return this.out(this.auth.from, this.auth.to);
+  reverse() {
+    return this.open().then(() => this.in(this.to, this.from));
   }
 
   /**
@@ -363,7 +379,7 @@ export default class Adit {
         this.events.emit('error', error);
         this[inDefer].reject(error);
       } else {
-        this[inDefer].resolve();
+        this[inDefer].resolve(this);
       }
     });
 
