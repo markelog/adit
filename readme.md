@@ -10,7 +10,7 @@ Forward all your stuff through ssh tunnel
 
 ### ssh and `Adit`
 ```sh
-$ ssh -L 9000:imgur.com:80 example.com`
+$ ssh -L 9000:imgur.com:80 example.com
 ```
 
 ```js
