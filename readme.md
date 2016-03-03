@@ -8,7 +8,7 @@ Forward all your stuff through ssh tunnel
 
 ## Usage
 
-### ssh Analogues
+### Comparison ssh commands with Adit API
 ```sh
 $ ssh -L 9000:imgur.com:80 example.com`
 ```
@@ -115,11 +115,6 @@ adit.close();
 
 ## Why?
 There is a lot of examples out there, for example, check out "[SSH Tunnel - Local and Remote Port Forwarding Explained With Examples](http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html)"
-
-## Usage
-
-
-
 
 ## Authentification strategy
 * If `password` is defined - use it
