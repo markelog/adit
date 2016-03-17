@@ -34,7 +34,6 @@ new Adit('9000:localhost:3000 example.com', /*password*/).reverse().then(adit =>
 ```
 ### Listen for events
 ```js
-// Listen for errors
 let server = new Adit(...);
 server.on('ready', ...);
 server.on('tcp connection', ...)
