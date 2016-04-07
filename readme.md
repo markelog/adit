@@ -16,7 +16,7 @@ $ ssh -L 9000:imgur.com:80 example.com
 ```
 
 ```js
-new Adit('9000:imgur.com:80 example.com', /*password*/).forward().then(adit => {
+new Adit('9000:imgur.com:80 example.com'/*, password*/).forward().then(adit => {
   console.log('success');
 
   adit.close();
@@ -26,7 +26,7 @@ new Adit('9000:imgur.com:80 example.com', /*password*/).forward().then(adit => {
 `$ ssh -R 9000:localhost:3000 example.com`
 
 ```js
-new Adit('9000:localhost:3000 example.com', /*password*/).reverse().then(adit => {
+new Adit('9000:localhost:3000 example.com'/*, password*/).reverse().then(adit => {
   console.log('success');
 
   adit.close();
