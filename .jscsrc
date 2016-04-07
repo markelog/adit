@@ -2,5 +2,7 @@
   "preset":"airbnb",
   "requireTrailingComma": false,
   "requireDollarBeforejQueryAssignment": false,
-  "disallowTrailingComma": true
+  "disallowTrailingComma": true,
+  "requireShorthandArrowFunctions": false,
+  "disallowArrayDestructuringReturn": false
 }
