@@ -57,7 +57,7 @@ let adit = new Adit({
 
   // port: 22, // 22 By default
   // Or port range - 
-  // port: [22, 23], the first available port, of the three, will be used
+  // port: [22, 23], the first available port of the three will be used
 
   // Also, see "Authentification strategy" below - 
   // "agent": "path",
@@ -82,7 +82,7 @@ adit.open(3).then(connection => {
     host: 'localhost'
     port: 8080,
     // Or port range - 
-    // port: [25, 28], the first available port, of the three, will be used
+    // port: [25, 28], the first available port of the three will be used
   }).then(() => {
     // Forwarding is enabled
   });
@@ -93,7 +93,7 @@ adit.open(3).then(connection => {
     host: 'example.com'
     port: 80,
     // Or port range - 
-    // port: [25, 28], the first available port, of the three, will be used
+    // port: [25, 28], the first available port of the three will be used
   }, {
     // To
     host: 'localhost'
@@ -109,13 +109,13 @@ adit.on('error', () => {
   // Report error
 });
 
-// Then, after awhile, you would want to close it
+// Then, after awhile you would want to close it
 adit.close();
 ```
 
 ## Authentification strategy
 * If `password` is defined - use it
 * If `agent` or `key` is defined explicitly - use one of them, prioritize the `agent`
-* If `agent` or `key` is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) if deinfed, prioritize the `agent`
+* If `agent` or `key` is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) 
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 
