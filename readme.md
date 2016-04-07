@@ -117,5 +117,6 @@ adit.close();
 * If `password` is defined - use it
 * If `agent` or `key` is defined explicitly - use one of them, prioritize the `agent`
 * If `agent` or `key` is not passed - use environment varibles (`SSH_AUTH_SOCK` for `agent`) 
+
 Note: if `key` is used, assume it is added without passphrase, otherwise you should use `agent`
 

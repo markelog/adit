@@ -29,7 +29,7 @@
   ],
   "files": [
     "dist",
-    "license"
+    "LICENSE"
   ],
   "author": "Oleg Gaidarenko <markelog@gmail.com>",
   "license": "MPL-2.0",
