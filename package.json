@@ -1,7 +1,7 @@
 {
   "name": "adit",
   "version": "1.0.7",
-  "description": "SSH tunneling made simple",
+  "description": "SSH tunnels - in any way you want it",
   "main": "dist/index.js",
   "scripts": {
     "build": "babel index.js -d dist",
