@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import Connection from 'ssh2';
 
-import Adit from '../index.js';
+import Adit from '../index';
 
 describe('Adit#constructor', () => {
   let oldSock = process.env.SSH_AUTH_SOCK;

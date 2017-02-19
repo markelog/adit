@@ -3,10 +3,9 @@ import * as oldNet from 'net';
 
 import sinon from 'sinon';
 import chai from 'chai';
-
-import Adit from '../index.js';
-
 import sinonChai from 'sinon-chai';
+
+import Adit from '../index';
 
 chai.use(sinonChai);
 let expect = chai.expect;
@@ -83,8 +82,8 @@ describe('net', () => {
       expect(adit.addEvents).to.be.called;
     });
 
-    it('should resolve connect promise', done => {
-      adit.open(2).then(connection => {
+    it('should resolve connect promise', (done) => {
+      adit.open(2).then((connection) => {
         expect(connection).to.equal(adit);
 
         done();
@@ -95,7 +94,7 @@ describe('net', () => {
       adit.connection.emit('ready', 1, () => {}, 2);
     });
 
-    it('should try to re-connect twice', done => {
+    it('should try to re-connect twice', (done) => {
       adit.open(2).then(() => {
         expect(Adit.prototype.reTry).to.be.calledTrice;
 
@@ -107,7 +106,7 @@ describe('net', () => {
       adit.connection.emit('ready', 1, () => {}, 2);
     });
 
-    it('should try to re-connect no more then twice', done => {
+    it('should try to re-connect no more then twice', (done) => {
       Adit.prototype.reTry.restore();
 
       adit.open(2).then(null, () => {
@@ -184,7 +183,7 @@ describe('net', () => {
 
       thirdArgument('test');
 
-      return connect.then(null, error => {
+      return connect.then(null, (error) => {
         expect(error).to.equal('test');
       });
     });
@@ -387,8 +386,8 @@ describe('net', () => {
         expect(adit.reTry).to.be.called;
       });
 
-      it('should catch correct error', done => {
-        adit.events.on('error', check => {
+      it('should catch correct error', (done) => {
+        adit.events.on('error', (check) => {
           expect(check.test).to.equal(1);
 
           done();
@@ -399,10 +398,10 @@ describe('net', () => {
     });
 
     describe('"close" event', () => {
-      it('should catch correct error', done => {
+      it('should catch correct error', (done) => {
         let test = { test: 1 };
 
-        adit.events.on('close', check => {
+        adit.events.on('close', (check) => {
           expect(check.test).to.equal(1);
 
           done();

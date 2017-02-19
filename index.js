@@ -11,6 +11,7 @@ const defer = Symbol();
 const inDefer = Symbol();
 const outDefer = Symbol();
 const retryTimes = Symbol();
+const tryMethod = Symbol();
 
 export default class Adit {
 
@@ -303,7 +304,7 @@ export default class Adit {
    * Helper for the Adit#reTry
    * @private
    */
-  _try() {
+  [tryMethod]() {
     // Close current connection
     this.close();
 
@@ -323,7 +324,7 @@ export default class Adit {
    */
   reTry(error) {
     if (this[retryTimes] !== 0) {
-      this._try();
+      this[tryMethod]();
     } else {
       this[defer].reject(error);
     }
@@ -372,7 +373,7 @@ export default class Adit {
       this.streams.push(socket, stream);
     });
 
-    this.connection.forwardIn(from.host, from.port, error => {
+    this.connection.forwardIn(from.host, from.port, (error) => {
       if (error) {
         this.events.emit('error', error);
         this[inDefer].reject(error);
@@ -395,7 +396,7 @@ export default class Adit {
 
     // Since for `forwardOut` creates only one connection, we would have to create a
     // server to pipe all requests
-    Adit.net.createServer(socket => {
+    Adit.net.createServer((socket) => {
       this.connection.forwardOut(from.host, from.port, to.host, to.port, (error, stream) => {
 
         // If error reject out promise connection and propogate the error
@@ -430,12 +431,12 @@ export default class Adit {
       this[defer].resolve(this);
     });
 
-    this.connection.on('error', error => {
+    this.connection.on('error', (error) => {
       this.events.emit('error', error);
       this.reTry();
     });
 
-    this.connection.on('close', error => {
+    this.connection.on('close', (error) => {
       // End all streams, to clean up event loop queue
       this.streams.forEach(stream => stream.end());
       this.events.emit('close', error);

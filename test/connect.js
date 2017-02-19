@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-import Adit from '../index.js';
+import Adit from '../index';
 
 describe('Adit#connect', () => {
   let stubs;

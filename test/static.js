@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import Adit from '../index.js';
+import Adit from '../index';
 
 describe('static methods', () => {
   describe('Adit.getPort', () => {
