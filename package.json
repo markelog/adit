@@ -7,9 +7,7 @@
     "build": "babel index.js -d dist",
     "watch": "gaze 'npm run build' index.js",
     "watch-test": "mocha --watch",
-    "lint": "npm run eslint && npm run jscs",
-    "jscs": "jscs index.js test",
-    "eslint": "eslint index.js test",
+    "lint": "eslint index.js test",
     "test": "npm run lint && mocha",
     "coverage": "istanbul cover _mocha -- test",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
@@ -59,7 +57,6 @@
     "eslint-plugin-import": "^2.2.0",
     "gaze-cli": "^0.2.0",
     "istanbul": "^1.0.0-alpha.2",
-    "jscs": "^2.11.0",
     "mocha": "^3.2.0",
     "sinon": "^1.17.1",
     "sinon-chai": "^2.8.0"
