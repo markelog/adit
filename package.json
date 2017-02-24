@@ -1,6 +1,6 @@
 {
   "name": "adit",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "SSH tunnels - in any way you want it",
   "main": "dist/index.js",
   "scripts": {
