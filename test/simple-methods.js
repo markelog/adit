@@ -6,7 +6,7 @@ import Adit from '../index';
 describe('Adit simple methods', () => {
   let to;
   let adit;
-  let oldSock = process.env.SSH_AUTH_SOCK;
+  const oldSock = process.env.SSH_AUTH_SOCK;
 
   beforeEach(() => {
     to = {
@@ -90,13 +90,13 @@ describe('Adit simple methods', () => {
       });
 
       it('should pass args to Adit#out method', () => {
-        let args = adit.out.firstCall.args;
+        const args = adit.out.firstCall.args;
         expect(args[0]).to.be.an('object');
         expect(args[1]).to.be.an('object');
       });
 
       it('should pass args in correct order to Adit#out method', () => {
-        let args = adit.out.firstCall.args;
+        const args = adit.out.firstCall.args;
         expect(args[0].port).to.equal('9999');
         expect(args[1].port).to.equal('3306');
       });
@@ -114,13 +114,13 @@ describe('Adit simple methods', () => {
       });
 
       it('should pass args to Adit#in method', () => {
-        let args = adit.in.firstCall.args;
+        const args = adit.in.firstCall.args;
         expect(args[0]).to.be.an('object');
         expect(args[1]).to.be.an('object');
       });
 
       it('should pass args in correct order to Adit#in method', () => {
-        let args = adit.in.firstCall.args;
+        const args = adit.in.firstCall.args;
         expect(args[0].port).to.equal('3306');
         expect(args[1].port).to.equal('9999');
       });

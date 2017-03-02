@@ -240,11 +240,9 @@ export default class Adit {
     // Note: if key is used, assume it is added without passphrase, otherwise you should use agent
     if (this.password) {
       this.key = this.agent = null;
-
     } else if (!settings.agent && !settings.password && settings.key) {
       this.key = Adit.read(settings.key);
       this.agent = null;
-
     } else if (!this.agent && !this.password && process.env.HOME) {
       this.key = Adit.read(path.join(process.env.HOME, '.ssh', 'id_rsa'));
     }
@@ -274,7 +272,7 @@ export default class Adit {
   connect(retries = 0) {
     this[retryTimes] = retries;
 
-    let settings = {
+    const settings = {
       host: this.host,
       port: this.port,
       username: this.username
@@ -282,10 +280,8 @@ export default class Adit {
 
     if (this.password) {
       settings.password = this.password;
-
     } else if (this.agent) {
       settings.agent = this.agent;
-
     } else {
       settings.privateKey = this.key;
     }
@@ -356,13 +352,12 @@ export default class Adit {
     ({ from, to } = Adit.getAddresses(from, to));
 
     this.connection.on('tcp connection', (info, accept) => {
-      let socket;
-      let stream = accept();
+      const stream = accept();
 
       stream.on('data', this.events.emit.bind(this.events, 'data'));
 
       // Connect to the socket and output the stream
-      socket = Adit.net.connect(to.port, to.host, () => {
+      const socket = Adit.net.connect(to.port, to.host, () => {
         stream.pipe(socket);
         socket.pipe(stream);
       });
@@ -398,7 +393,6 @@ export default class Adit {
     // server to pipe all requests
     Adit.net.createServer((socket) => {
       this.connection.forwardOut(from.host, from.port, to.host, to.port, (error, stream) => {
-
         // If error reject out promise connection and propogate the error
         if (error) {
           this.events.emit('error', error);

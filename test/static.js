@@ -84,7 +84,7 @@ describe('static methods', () => {
   });
 
   describe('Adit.getAddresses', () => {
-    let { from, to } = Adit.getAddresses({
+    const { from, to } = Adit.getAddresses({
       port: 1
     }, {
       host: '1',

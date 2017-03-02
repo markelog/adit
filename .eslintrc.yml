@@ -1,13 +1,4 @@
-extends: airbnb-base
-parser: "babel-eslint"
-plugins:
-  - import
+extends: sexy
+parser: babel-eslint
 rules:
-  "no-param-reassign": 0
-  "guard-for-in": 0
-  "comma-dangle": 0
-  "padded-blocks": 0
-  "prefer-const": 0
-  "symbol-description": 0
-  "no-multi-assign": 0
-  "no-restricted-syntax": 0
+  symbol-description: "off"

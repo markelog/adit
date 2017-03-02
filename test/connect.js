@@ -7,13 +7,13 @@ describe('Adit#connect', () => {
   let stubs;
   let to;
   let buffer;
-  let oldSock = process.env.SSH_AUTH_SOCK;
+  const oldSock = process.env.SSH_AUTH_SOCK;
 
-  let connectAndGetArgs = () => {
-    let adit = new Adit(to);
+  const connectAndGetArgs = () => {
+    const adit = new Adit(to);
     adit.connect(2);
 
-    let args = adit.connection.connect.firstCall.args[0];
+    const args = adit.connection.connect.firstCall.args[0];
     args.adit = adit;
 
     return args;
@@ -42,7 +42,7 @@ describe('Adit#connect', () => {
     Adit.Connection.restore();
     process.env.SSH_AUTH_SOCK = oldSock;
 
-    for (let stub in stubs) {
+    for (const stub in stubs) {
       stubs[stub].restore();
     }
   });
@@ -50,7 +50,7 @@ describe('Adit#connect', () => {
   it('should use password', () => {
     to.password = 'pass';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.password).to.equal('pass');
     expect(call).to.not.have.property('agent');
@@ -62,7 +62,7 @@ describe('Adit#connect', () => {
     process.env.HOME = __filename;
     to.agent = 'custom-agent';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.agent).to.equal('custom-agent');
     expect(call).to.not.have.property('password');
@@ -72,7 +72,7 @@ describe('Adit#connect', () => {
   it('should use environment agent', () => {
     process.env.SSH_AUTH_SOCK = 'env-sock';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.agent).to.equal('env-sock');
     expect(call).to.not.have.property('password');
@@ -83,7 +83,7 @@ describe('Adit#connect', () => {
     delete process.env.SSH_AUTH_SOCK;
     stubs.read = sinon.stub(Adit, 'read').returns(buffer);
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.privateKey).to.equal(buffer);
     expect(call).to.not.have.property('agent');
@@ -94,7 +94,7 @@ describe('Adit#connect', () => {
     stubs.read = sinon.stub(Adit, 'read').returns(buffer);
     to.key = 'private-key';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.privateKey).to.equal(buffer);
     expect(call).to.not.have.property('agent');
@@ -105,7 +105,7 @@ describe('Adit#connect', () => {
     delete process.env.SSH_AUTH_SOCK;
     to.password = 'pass';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.host).to.equal('to-host');
     expect(call.port).to.equal(2);
@@ -115,7 +115,7 @@ describe('Adit#connect', () => {
   it('should invoke ssh "connect" method with ssh-agent', () => {
     process.env.SSH_AUTH_SOCK = 'env-sock';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.agent).to.equal('env-sock');
     expect(call).to.not.have.property('privateKey');
@@ -125,7 +125,7 @@ describe('Adit#connect', () => {
   it('should invoke ssh "connect" method with ssh-agent as argument', () => {
     to.agent = 'custom-agent';
 
-    let call = connectAndGetArgs();
+    const call = connectAndGetArgs();
 
     expect(call.agent).to.equal('custom-agent');
     expect(call).to.not.have.property('privateKey');

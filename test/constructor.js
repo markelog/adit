@@ -7,8 +7,8 @@ import Connection from 'ssh2';
 import Adit from '../index';
 
 describe('Adit#constructor', () => {
-  let oldSock = process.env.SSH_AUTH_SOCK;
-  let oldHome = process.env.HOME;
+  const oldSock = process.env.SSH_AUTH_SOCK;
+  const oldHome = process.env.HOME;
   let to;
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('Adit#constructor', () => {
   it('should define all needed properties with "settings" object', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
 
-    let adit = new Adit(to);
+    const adit = new Adit(to);
 
     expect(adit.portRange).to.equal(to.port);
     expect(adit.port).to.equal(to.port);
@@ -49,7 +49,7 @@ describe('Adit#constructor', () => {
   it('should define all needed properties with string argument', () => {
     process.env.SSH_AUTH_SOCK = 'tmp';
 
-    let adit = new Adit('9999:localhost:3306 8.8.8.8');
+    const adit = new Adit('9999:localhost:3306 8.8.8.8');
 
     expect(adit.portRange).to.equal(22);
     expect(adit.port).to.equal(22);
@@ -74,7 +74,7 @@ describe('Adit#constructor', () => {
 
     to.password = 'pass';
 
-    let adit = new Adit(to);
+    const adit = new Adit(to);
 
     expect(adit.password).to.equal('pass');
     expect(adit.agent).to.equal(null);
@@ -84,7 +84,7 @@ describe('Adit#constructor', () => {
   it('should define port with port range', () => {
     to.port = [1, 5];
 
-    let adit = new Adit(to);
+    const adit = new Adit(to);
 
     expect(adit.port).to.be.within(1, 5);
     expect(adit.portRange).to.equal(to.port);
@@ -95,7 +95,7 @@ describe('Adit#constructor', () => {
     to.username = 'me';
     to.password = 'pass';
 
-    let adit = new Adit(to);
+    const adit = new Adit(to);
 
     expect(adit.username).to.equal('me');
     expect(adit.password).to.equal('pass');
@@ -105,7 +105,7 @@ describe('Adit#constructor', () => {
     delete process.env.SSH_AUTH_SOCK;
     delete process.env.HOME;
 
-    let constructor = () => new Adit(to);
+    const constructor = () => new Adit(to);
 
     expect(constructor).to.throw(/SSH-agent is not enabled/);
   });

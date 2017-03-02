@@ -8,7 +8,7 @@ import sinonChai from 'sinon-chai';
 import Adit from '../index';
 
 chai.use(sinonChai);
-let expect = chai.expect;
+const expect = chai.expect;
 
 describe('net', () => {
   let to;
@@ -43,7 +43,7 @@ describe('net', () => {
 
     adit = new Adit(to);
 
-    let EE = EventEmitter;
+    const EE = EventEmitter;
 
     adit.connection = new EE();
     adit.connection = new EE();
@@ -146,7 +146,7 @@ describe('net', () => {
     });
 
     it('should resolve promise', () => {
-      let thirdArgument = adit.connection.forwardIn.firstCall.args[2];
+      const thirdArgument = adit.connection.forwardIn.firstCall.args[2];
 
       thirdArgument();
 
@@ -167,7 +167,7 @@ describe('net', () => {
     });
 
     it('should emit error', () => {
-      let thirdArgument = adit.connection.forwardIn.firstCall.args[2];
+      const thirdArgument = adit.connection.forwardIn.firstCall.args[2];
 
       thirdArgument('test');
 
@@ -179,7 +179,7 @@ describe('net', () => {
     });
 
     it('should reject "in" promise', () => {
-      let thirdArgument = adit.connection.forwardIn.firstCall.args[2];
+      const thirdArgument = adit.connection.forwardIn.firstCall.args[2];
 
       thirdArgument('test');
 
@@ -194,7 +194,7 @@ describe('net', () => {
         { host: 'tset', port: 8888 }
       );
 
-      let secondArgument = adit.connection.forwardIn.firstCall.args[1];
+      const secondArgument = adit.connection.forwardIn.firstCall.args[1];
 
       expect(secondArgument).to.be.within(9999, 10000);
     });
@@ -205,7 +205,7 @@ describe('net', () => {
         { host: 'tset', port: [8888, 9999] }
       );
 
-      let secondArgument = adit.connection.forwardIn.firstCall.args[1];
+      const secondArgument = adit.connection.forwardIn.firstCall.args[1];
 
       expect(secondArgument).to.be.within(8888, 9999);
     });
@@ -346,7 +346,6 @@ describe('net', () => {
       });
 
       it('should connect to host/port', () => {
-
         expect(connectArgs[0]).to.equal(8888);
         expect(connectArgs[1]).to.equal('tset');
       });
@@ -399,7 +398,7 @@ describe('net', () => {
 
     describe('"close" event', () => {
       it('should catch correct error', (done) => {
-        let test = { test: 1 };
+        const test = { test: 1 };
 
         adit.events.on('close', (check) => {
           expect(check.test).to.equal(1);

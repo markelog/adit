@@ -7,7 +7,6 @@ cache:
 script: "npm run ci"
 
 node_js:
-  - "4"
   - "5"
   - "6"
   - "7"
