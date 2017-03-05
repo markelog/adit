@@ -53,7 +53,7 @@
     "chai": "^3.3.0",
     "coveralls": "^2.11.8",
     "eslint": "^3.16.1",
-    "eslint-config-sexy": "0.0.10",
+    "eslint-config-sexy": "^1.0.1",
     "gaze-cli": "^0.2.0",
     "istanbul": "^1.0.0-alpha.2",
     "mocha": "^3.2.0",
