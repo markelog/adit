@@ -1,8 +1,4 @@
-[![Build Status](https://travis-ci.org/markelog/adit.svg?branch=master)](https://travis-ci.org/markelog/adit)
-[![Coverage Status](https://coveralls.io/repos/github/markelog/adit/badge.svg?branch=master&t=CdowK8)](https://coveralls.io/github/markelog/adit?branch=master)
-
-Adit
-========================
+# Adit [![Build Status](https://travis-ci.org/markelog/adit.svg?branch=master)](https://travis-ci.org/markelog/adit) [![Coverage Status](https://coveralls.io/repos/github/markelog/adit/badge.svg?branch=master&t=CdowK8)](https://coveralls.io/github/markelog/adit?branch=master)
 
 Forward all your stuff through ssh tunnel.
 
